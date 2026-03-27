@@ -1,0 +1,26 @@
+body {
+    margin: 0;
+    background: rgb(63, 63, 63);
+}
+
+canvas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgb(37, 100, 97);
+}
+
+.menu_level1 {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: blue;
+    padding: 20px 50px;
+    color: white;
+    display: none;
+}
+
+.invisible {
+    display: none;
+}
