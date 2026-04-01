@@ -42,12 +42,37 @@ function taille() {
     canvas.height = h;
 }
 
-taille()
-window.addEventListener("resize", taille);
+taille();
+window.addEventListener("resize", () => {
+    taille(); // 1. On recalcule 'h'
+    
+    // On actualise la position du personnage, du bois et de la boue
+    personnage.y = h - 160;
+    bois_t.forEach(planche => {
+        planche.y = h - 45;
+    });
+    boues.forEach(flaque => {
+        flaque.y = h - 30;
+    });
+});
+
 //Voir si l'écran a été rotate
 screen.orientation.addEventListener("change", () => {
-    console.log("rotation !!")
-    setTimeout(taille, 100);
+    console.log("rotation !!");
+    setTimeout(() => {
+        taille();
+        
+        // On actualise la position du personnage, du bois et de la boue
+        personnage.y = h - 160;
+        
+        bois_t.forEach(planche => {
+            planche.y = h - 45;
+        });
+        
+        boues.forEach(flaque => {
+            flaque.y = h - 30;
+        });
+    }, 100);
 });
 
 //JOUEUR ------------------------------
