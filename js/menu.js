@@ -33,6 +33,7 @@ btn_menu2.addEventListener("click", demarrer);
 // btn_recommencer.addEventListener("click", demarrer);
 
 function demarrer() {
+    document.documentElement.requestFullscreen();
     menu2_level1.classList.add("invisible");
     menu_defaite.classList.add("invisible");
     creerPluie();
