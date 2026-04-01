@@ -26,7 +26,7 @@ canvas {
 }
 
 /* --- FONDS DES MENUS --- */
-.menu1_level1, .menu2_level1, .menu_défaite_level1, .menu_fin_level1 {
+.menu1_level1, .menu2_level1, .menu_défaite_level1, .menu_fin_level1, .tourner-ecran {
     position: fixed;
     top: 0;
     left: 0;
@@ -66,11 +66,6 @@ canvas {
     color: #ffcc00;
 }
 
-.tuto_texte p {
-    line-height: 1.5;
-    margin: 15px 0;
-}
-
 /* --- BOUTONS --- */
 .menu_button {
     z-index: 10; /* Très important : au-dessus de ".touches" pour être cliquable ! */
@@ -81,13 +76,11 @@ canvas {
     font-size: 1.5rem;
     font-weight: bold;
     text-transform: uppercase;
-    
     color: #ffeeee;
     background: rgb(85, 97, 138);
     border: solid 3px #ffeeee;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-    
     cursor: pointer;
     transition: all 0.2s ease; /* Pour des animations fluides au survol */
 }
@@ -102,7 +95,7 @@ canvas {
     transform: scale(0.95); /* S'enfonce quand on clique */
 }
 
-/* --- ZONES TACTILES DU TUTO --- */
+/* Dans le menu des explications, on peut appuyer sur les parties gauche et droite de l'écran pour faire comprendre qu'on peut appuyer ici*/
 .touches {
     display: flex;
     position: absolute;
@@ -119,7 +112,7 @@ canvas {
     height: 100%;
 }
 
-/* --- ANIMATION TUTO --- */
+/* Animation */
 @keyframes toucher {
     0% { background-color: rgba(255, 255, 255, 0.4); }
     100% { background-color: transparent; }
@@ -129,7 +122,49 @@ canvas {
     animation: toucher 0.4s ease-out;
 }
 
-/* --- UTILITAIRES --- */
+/* Quand les menus ne sont pas affichés */
 .invisible {
     display: none !important;
+}
+
+#tourner-ecran {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(26, 26, 26, 0.9);
+    color: #ffeeee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 1.5rem;
+    font-family: "Retro", sans-serif;
+    z-index: 9999;
+    padding: 20px;
+}
+
+#mobile {
+        animation: mobile_rotate 1s ease infinite;
+        transform-origin: 110px 145px;
+    }
+
+    @keyframes mobile_rotate {
+        0% {
+            transform: rotate(0deg);
+        }
+        50% {
+            transform: rotate(-90deg);
+        }
+        100% {
+            transform: rotate(-90deg);
+        }
+    }
+
+/* Si l'écran est en mode Paysage (plus large que haut) */
+@media screen and (orientation: landscape) {
+    #tourner-ecran {
+        display: none;
+    }
 }

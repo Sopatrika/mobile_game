@@ -8,8 +8,8 @@ const touche_droite = document.querySelector(".touche_droite");
 
 const btn_menu1 = document.querySelector("#btn_menu1");
 const btn_menu2 = document.querySelector("#btn_menu2");
-
 const btn_recommencer = document.querySelector("#btn_recommencer");
+const btn_fin = document.querySelector(".btn_fin");
 
 btn_menu1.addEventListener("click", e=> {
     menu1_level1.classList.add("invisible");
@@ -38,6 +38,7 @@ function demarrer() {
     creerPluie();
     affichage();
     setInterval(boue, 5000);
+    musique_fond.play();
 }
 
 btn_recommencer.addEventListener("click", e=>{
@@ -45,6 +46,8 @@ btn_recommencer.addEventListener("click", e=>{
 })
 
 function fin_du_jeu() {
+    musique_fond.pause(); 
+    musique_fond.currentTime = 0;
     menu_fin.classList.remove("invisible");
 }
 
@@ -54,5 +57,12 @@ document.addEventListener("DOMContentLoaded", e=>{
     level1.drawImage(fond, 0, 0, w, h);
     level1.drawImage(sol, 0, h - 50, w, 50);
 })
+
+//Fonction commune à tout les jeux pour passer au jeu suivant
+function signalVictory() {
+    window.parent.postMessage('GAME_COMPLETE', '*');
+}
+
+btn_fin.addEventListener("touchstart", signalVictory);
 
 

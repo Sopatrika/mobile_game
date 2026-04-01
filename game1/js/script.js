@@ -1,4 +1,5 @@
 // INITIALISATION DES VARIABLES
+const body = document.querySelector("body");
 const canvas = document.querySelector("#level1");
 const level1 = canvas.getContext("2d", {willReadFrequently: true});
 
@@ -17,6 +18,13 @@ const boue2 = document.querySelector("#boue2");
 
 const piece1 = document.querySelector("#piece1");
 
+const musique_fond = new Audio("sound/Arrows_in_the_Downpour.mp3"); //Musique de fond
+musique_fond.loop = true; 
+musique_fond.volume = 0.5;
+
+const damage_sound = new Audio ("sound/damage.mp3"); //Son de dommage
+const build_sound = new Audio ("sound/build.mp3");
+
 //TAILLE DU CANVAS ------------------------------
 let w, h;
 function taille() {
@@ -28,14 +36,19 @@ function taille() {
         h = 430;
     }
 
-    menu1_level1.width = w;
-    menu1_level1.height
+    body.width = w;
+    body.height = w;
     canvas.width = w;
     canvas.height = h;
 }
 
 taille()
-document.addEventListener("resize", taille);
+window.addEventListener("resize", taille);
+//Voir si l'écran a été rotate
+screen.orientation.addEventListener("change", () => {
+    console.log("rotation !!")
+    setTimeout(taille, 100);
+});
 
 //JOUEUR ------------------------------
 let personnage = {
@@ -55,15 +68,33 @@ let ecrase = 0; //Si le joueur est touché par une flèche, on ajoute cette vale
 
 const animationMarche = [perso2, perso1, perso3, perso1]; //Animation du personnage
 
+//Cheat code
+let cheat_code = false;
+let compteur_triche = 0; // Pour compter les 3 clics
+let delai_triche = 0;
 //Gestion des mouvements
 window.addEventListener("touchstart", (e) => {
-    let touchX = e.touches[0].clientX; //détecte si l'utilisateur touche l'écran.
-    if (touchX < w / 2) {
-        personnage.dx = -2; // Marche à gauche
-        personnage.direction = -1; // Tourne le sprite à gauche
+    let touchX = e.touches[0].clientX; //longueur
+    let touchY = e.touches[0].clientY; //hauteur
+
+    // Pour pouvoir activer le chead code (il faut cliquer 3 fois tout en haut à droite)
+    if (touchX > w - 100 && touchY < 100) {
+        compteur_triche++;
+        if (compteur_triche >= 3) {
+            cheat_code = true;
+            console.log("Cheat code activé !");
+        }
     } else {
-        personnage.dx = 2;  // Marche à droite
-        personnage.direction = 1;  // Tourne le sprite à droite
+        compteur_triche = 0; 
+    }
+
+    // ----------- Les controle du joueur ---------
+    if (touchX < w / 2) {
+        personnage.dx = -2; 
+        personnage.direction = -1; 
+    } else {
+        personnage.dx = 2;  
+        personnage.direction = 1;  
     }
 });
 
@@ -139,7 +170,7 @@ const flèches = [
 
 let arrows = [];
 function creerFleche() {
-    for(let i = 0; i < 7; i++) {
+    for(let i = 0; i < 5; i++) {
         arrows.push({
             x: Math.random() * w, //Position sur l'axe X
             y: Math.random() * - h, //Position sur l'axe Y
@@ -204,6 +235,7 @@ function collision_fleche(fleche) {
     { 
         // Si la flèche touche
         if (fleche.toucher_sol === false && personnage.vulnerabilite === true) {
+            damage_sound.play();
             personnage.vie--;
             personnage.vulnerabilite = false; // Le joueur devient invincible
             console.log("Touché ! Il reste " + personnage.vie + " vies.");
@@ -222,10 +254,18 @@ function collision_fleche(fleche) {
 let dernierTemps = performance.now();
 let ratio = 1;
 
+//Animation de la pièce du chronorouage
 let animation_rouage = 0;
 let direction_rouage = 1;
+
 //Afficher tous les éléments ---------------------------------------------------------------------------
 function affichage(tempsActuel) {
+    // Fonctionnement du cheat code
+    if (cheat_code === true) {
+        fin_du_jeu();
+        return;
+    }
+
     if (!tempsActuel) tempsActuel = performance.now(); 
     let deltaTime = tempsActuel - dernierTemps;
     dernierTemps = tempsActuel;
@@ -347,6 +387,7 @@ function affichage(tempsActuel) {
             bois_t[nbr_bois].recup = true;
         }
         if (personnage.x > w - 200 && bois_t[nbr_bois].recup === true) {
+            build_sound.play();
             bois_t[nbr_bois].recup = false;
             nbr_bois++;
             pourcentage_moulin += 25; 
@@ -407,10 +448,6 @@ function affichage(tempsActuel) {
     level1.restore();
     level1.filter = "none";
 
-    // level1.font = "24px Arial";
-    // level1.fillStyle = "white";
-    // level1.fillText(pourcentage_moulin +"%", w - 140, h - 250);
-
     // AFFICHER LES COEURS ---------------
     let positionX_coeur = 10;
 
@@ -442,5 +479,10 @@ function affichage(tempsActuel) {
         
     } else {
         menu_defaite.classList.remove("invisible"); // Le joueur n'a plus de vie
+        if (navigator.vibrate) {
+            navigator.vibrate(200);
+        }
+        musique_fond.pause(); 
+        musique_fond.currentTime = 0;
     }
 }
