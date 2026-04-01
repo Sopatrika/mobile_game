@@ -3,14 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Niveau 1</title>
     <link rel="stylesheet" href="styles/level1.css">
 </head>
 <body>
     <!-- Canvas de jeu -->
-     <div class="menu_level1">Lancer la partie</div>
-    <canvas id="level1"></canvas>
+    <div class="menu1_level1">
+        <h1>ORIGINE</h1> <div class="menu_button" id="btn_menu1">Continuer</div>
+    </div>
 
+    <div class="menu2_level1 invisible">
+        
+        <div class="touches">
+            <div class="touche_gauche"></div>
+            <div class="touche_droite"></div>
+        </div>
+
+        <div class="tuto_texte">
+            <h2>Comment jouer ?</h2>
+            <p>👉 Cliquez sur la <strong>gauche</strong> ou la <strong>droite</strong> de l'écran pour faire avancer le personnage.</p>
+            <p>🪵 Récupérez le bois afin de construire le moulin.</p>
+            <p>🔥 Évitez les flèches enflammées des ennemis !</p>
+        </div>
+
+        <div class="menu_button" id="btn_menu2">Jouer</div>
+    </div>
+
+    <div class="menu_défaite_level1 invisible">
+        <h2>Perdu !</h2>
+        <div class="menu_button" id="btn_recommencer">Recommencer</div>
+    </div>
+    <div class="menu_fin_level1 invisible">
+        <h1>Victoire !</h1>
+        <p>Vous avez reçu le premier chronorouage !</p>
+        <div class="menu_button" id="btn_fin">Continuer</div>
+    </div>
+
+
+    <canvas id="level1"></canvas>
 
 
     <!-- images utilisés -->
@@ -35,7 +65,13 @@
     <img id="Moulin_50complete" src="img/Sprites/Moulin_50complete.png" class="invisible">
     <img id="Moulin_75complete" src="img/Sprites/Moulin_75complete.png" class="invisible">
     <img id="Moulin_100complete" src="img/Sprites/Moulin_100complete.png" class="invisible">
+
+    <img id="boue1" src="img/Sprites/boue1.png" alt="" class="invisible">
+    <img id="boue2" src="img/Sprites/boue2.png" alt="" class="invisible">
+
+    <img id="piece1" src="img/Sprites/piece1.png" alt="" class="invisible">
     
+    <script src="js/menu.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>
