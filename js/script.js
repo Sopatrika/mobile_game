@@ -139,7 +139,7 @@ const flèches = [
 
 let arrows = [];
 function creerFleche() {
-    for(let i = 0; i < 5; i++) {
+    for(let i = 0; i < 7; i++) {
         arrows.push({
             x: Math.random() * w, //Position sur l'axe X
             y: Math.random() * - h, //Position sur l'axe Y
@@ -407,9 +407,9 @@ function affichage(tempsActuel) {
     level1.restore();
     level1.filter = "none";
 
-    level1.font = "24px Arial";
-    level1.fillStyle = "white";
-    level1.fillText(pourcentage_moulin +"%", w - 140, h - 250);
+    // level1.font = "24px Arial";
+    // level1.fillStyle = "white";
+    // level1.fillText(pourcentage_moulin +"%", w - 140, h - 250);
 
     // AFFICHER LES COEURS ---------------
     let positionX_coeur = 10;
