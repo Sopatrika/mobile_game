@@ -479,9 +479,7 @@ function affichage(tempsActuel) {
         
     } else {
         menu_defaite.classList.remove("invisible"); // Le joueur n'a plus de vie
-        if (navigator.vibrate) {
-            navigator.vibrate(200);
-        }
+        navigator.vibrate(200);
         musique_fond.pause(); 
         musique_fond.currentTime = 0;
     }
