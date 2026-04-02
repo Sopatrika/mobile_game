@@ -120,7 +120,7 @@ let ecrase = 0; //Si le joueur est touché par une flèche, on ajoute cette vale
 
 const animationMarche = [perso2, perso1, perso3, perso1]; //Animation du personnage
 
-//Cheat code
+//initalisation du Cheat code
 let cheat_code = false;
 let compteur_triche = 0; // Pour compter les 3 clics
 let delai_triche = 0;
@@ -251,11 +251,18 @@ window.addEventListener("deviceorientation", (e) => {
     }
 });
 
+// la flèche va spawn en haut en fonction de l'inclinaison
+function calculerSpawnX() {
+    let position_base = (w / 2) - (force_vent * (w / 10));
+    let x_final = position_base + ((Math.random() * 300) - 150);
+    return x_final;
+}
+
 let arrows = [];
 function creerFleche() {
     for(let i = 0; i < 5; i++) {
         arrows.push({
-            x: Math.random() * w, //Position sur l'axe X
+            x: calculerSpawnX(), //fonction pour calculer la position x
             y: Math.random() * - h, //Position sur l'axe Y
             dx: 4, //Vitesse sur l'axe X
             dy: 4, //Vitesse sur l'axe Y
@@ -325,7 +332,7 @@ function collision_fleche(fleche) {
             ecrase = 10;
 
             // la flèche est tp tout en haut
-            fleche.x = Math.random() * w;
+            fleche.x = calculerSpawnX();
             fleche.y = (Math.random() * -200) - 50;
             fleche.dx = 4; 
             fleche.dy = 4; 
@@ -406,6 +413,11 @@ function affichage(tempsActuel) {
             fleche.x = Math.random() * w;
         }
 
+        if (fleche.x > w + 50 || fleche.x < -50) {
+            fleche.y = (Math.random() * -200) - 50;
+            fleche.x = calculerSpawnX(); // <--- ICI
+        }
+
         if (fleche.toucher_sol === false) {
             fleche.x += (fleche.dx + force_vent) * ratio;
             fleche.y += fleche.dy * ratio;
@@ -424,7 +436,7 @@ function affichage(tempsActuel) {
 
             if (fleche.delai >= 120) { 
                 fleche.y = (Math.random() * -200) - 50;
-                fleche.x = Math.random() * w;
+                fleche.x = calculerSpawnX();
                 
                 fleche.dy = 4; 
                 fleche.dx = 4; 
