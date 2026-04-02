@@ -239,8 +239,8 @@ window.addEventListener("deviceorientation", (e) => {
     if (inclinaison !== null && inclinaison !== undefined) {
         
         //Si inclinaison > 30 ou < -30 on bloque a cette valeur
-        if (inclinaison > 30) inclinaison = 30;
-        if (inclinaison < -30) inclinaison = -30;
+        if (inclinaison > 50) inclinaison = 50;
+        if (inclinaison < -50) inclinaison = -50;
 
         // les flèches tombent en verticale
         if (inclinaison > -5 && inclinaison < 5) {
@@ -445,7 +445,6 @@ function affichage(tempsActuel) {
         }
         level1.drawImage(flèches[fleche.indexSprite], -25, -20, 50, 40);
         level1.restore();
-        level1.drawImage(flèches[fleche.indexSprite], fleche.x, fleche.y, 50, 40);
 
 
         //Animation des flèches
