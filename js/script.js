@@ -251,11 +251,15 @@ window.addEventListener("deviceorientation", (e) => {
     }
 });
 
-// la flèche va spawn en haut en fonction de l'inclinaison
+// fonction pour calculer la position x de la flèche en fonction de l'inclinaison
 function calculerSpawnX() {
-    let position_base = (w / 2) - (force_vent * (w / 10));
-    let x_final = position_base + ((Math.random() * 300) - 150);
-    return x_final;
+    let point_atterrissage = Math.random() * w;
+    if (force_vent === 0) {
+        return point_atterrissage;
+    }
+    let temps_de_chute = h / 5;
+    let derive_totale = force_vent * temps_de_chute;
+    return point_atterrissage - derive_totale;
 }
 
 let arrows = [];
