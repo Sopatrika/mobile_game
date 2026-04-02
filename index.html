@@ -9,12 +9,18 @@
 </head>
 <body>
     <!-- Canvas de jeu -->
-     <div class="interface_histoire">
-        <canvas id="dialogue1"></canvas>
-        <div class="boite_dialogue"><span class="nom_perso">Fille:</span>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cupiditate modi, autem voluptate non doloribus ullam possimus mollitia deleniti sequi illo quisquam aliquid deserunt nisi sunt enim debitis! Dolorem, minus reprehenderit!</div>
-     </div>
+     <div class="menu_dialogue"> 
+        <div class="dialogue_conteneur">
+            <div class="boite_dialogue">
+                <h3>Fille du menuisier</h3> 
+                <p id="texte_dialogue"></p> 
+                <div class="dialogue_button" id="btn_suite_dialogue">Continuer</div>
+            </div>
+        </div>
+    </div>
     <div class="menu1_level1 invisible">
-        <h1>Chapitre 1 — L'Origine</h1> <div class="menu_button" id="btn_menu1">Continuer</div>
+        <h1>Chapitre 1 — L'Origine</h1> 
+        <div class="menu_button" id="btn_menu1">Continuer</div>
     </div>
 
     <div class="menu2_level1 invisible">
@@ -41,7 +47,7 @@
     <div class="menu_fin_level1 invisible">
         <h1>Victoire !</h1>
         <p>Vous avez recupérer le premier chronorouage !</p>
-        <div class="menu_button" id="btn_fin">Continuer</div>
+        <div id="btn_fin" class="menu_button">Continuer</div>
     </div>
 
     <div id="tourner-ecran">
@@ -53,6 +59,7 @@
     </div>
 
 
+    <!-- Le canvas utilisé -->
     <canvas id="level1"></canvas>
 
 
@@ -85,6 +92,7 @@
 
     <img id="piece1" src="img/Sprites/piece1.png" alt="" class="invisible">
     
+    <script src="js/animation_texte.js"></script>
     <script src="js/menu.js"></script>
     <script src="js/script.js"></script>
 </body>
