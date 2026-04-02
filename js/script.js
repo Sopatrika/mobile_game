@@ -221,19 +221,33 @@ const flèches = [
 
 
 //Ce script permet d'initialiser la position des flèches en fonction de l'orientation du téléphone
-let intervalDifficulte;
-let force_vent = 0; // Vitesse horizontale ajoutée par l'inclinaison du mobile
+let force_vent = 0; // Vitesse horizontale des flèches
 window.addEventListener("deviceorientation", (e) => {
-    let inclinaison = e.gamma; //recupère l'inclinaison du téléphone
+    let inclinaison = 0;
+    // On vérifie dans quel sens le joueur a tourné son téléphone
+    let angleEcran = screen.orientation ? screen.orientation.angle : window.orientation;
 
-    // Sécurité : e.gamma peut être null sur PC
-    if (inclinaison !== null) {
-        // On limite l'inclinaison (pour que les flèches ne partent pas à la vitesse de la lumière)
-        if (inclinaison > 45) inclinaison = 45;
-        if (inclinaison < -45) inclinaison = -45;
+    if (angleEcran === 90) {
+        inclinaison = e.beta; // tourné vers la gauche
+    } else if (angleEcran === -90 || angleEcran === 270) {
+        inclinaison = -e.beta; // tourné vers la droite
+    } else {
+        inclinaison = e.gamma; // Portrait
+    }
 
-        // On transforme l'angle en petite force (ex: 45 degrés d'inclinaison = force de 5)
-        force_vent = inclinaison / 9; 
+    // Délimiter les limites pour éviter qu'on puisse trop tourner le tel
+    if (inclinaison !== null && inclinaison !== undefined) {
+        
+        //Si inclinaison > 30 ou < -30 on bloque a cette valeur
+        if (inclinaison > 30) inclinaison = 30;
+        if (inclinaison < -30) inclinaison = -30;
+
+        // les flèches tombent en verticale
+        if (inclinaison > -5 && inclinaison < 5) {
+            inclinaison = 0;
+        }
+
+        force_vent = inclinaison / 6; 
     }
 });
 
