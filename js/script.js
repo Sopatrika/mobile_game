@@ -251,7 +251,7 @@ window.addEventListener("deviceorientation", (e) => {
     }
 });
 
-// fonction pour calculer la position x de la flèche en fonction de l'inclinaison
+// fonction pour calculer la position x de la flèche et de la pluie en fonction de l'inclinaison
 function calculerSpawnX() {
     let point_atterrissage = Math.random() * w;
     if (force_vent === 0) {
@@ -268,7 +268,7 @@ function creerFleche() {
         arrows.push({
             x: calculerSpawnX(), //fonction pour calculer la position x
             y: Math.random() * - h, //Position sur l'axe Y
-            dx: 4, //Vitesse sur l'axe X
+            dx: 0, //Vitesse sur l'axe X
             dy: 4, //Vitesse sur l'axe Y
             indexSprite: 0, //Numéro du sprite
             compteur: 12, //FPS de l'animation du sprite
@@ -283,9 +283,9 @@ let pluie = [];
 function creerPluie() {
     for(let i = 0; i < 200; i++) {
         pluie.push({
-            x: Math.random() * (w + 50) - 50,
+            x: calculerSpawnX(),
             y: Math.random() * h,
-            dx: 1,
+            dx: 0,
             dy: 5,
         });
     }
@@ -338,7 +338,7 @@ function collision_fleche(fleche) {
             // la flèche est tp tout en haut
             fleche.x = calculerSpawnX();
             fleche.y = (Math.random() * -200) - 50;
-            fleche.dx = 4; 
+            fleche.dx = 0; 
             fleche.dy = 4; 
             fleche.delai = 0; 
         }
@@ -427,6 +427,16 @@ function affichage(tempsActuel) {
             fleche.y += fleche.dy * ratio;
         }
 
+        //Rotation de la flèche en fonction du vent
+        level1.save();
+        level1.translate(fleche.x + 25, fleche.y + 20);
+        if (fleche.toucher_sol === false) {
+            fleche.angle_memoire = Math.atan2(fleche.dy, fleche.dx + force_vent);
+        }
+        level1.rotate((fleche.angle_memoire || 0) - (Math.PI / 4));
+        level1.drawImage(flèches[fleche.indexSprite], -25, -20, 50, 40);
+        level1.restore();
+
         //Si la flèche touche le sol
         if (fleche.y >= h - 60) {
             
@@ -443,25 +453,12 @@ function affichage(tempsActuel) {
                 fleche.x = calculerSpawnX();
                 
                 fleche.dy = 4; 
-                fleche.dx = 4; 
+                fleche.dx = 0; 
                 
                 fleche.delai = 0; 
                 fleche.toucher_sol = false;
             }
         }
-
-        //Rotation de la flèche en fonction du vent
-        level1.save();
-        level1.translate(fleche.x + 25, fleche.y + 20);
-        if (fleche.toucher_sol === false) {
-            let angle_chute = Math.atan2(fleche.dy, fleche.dx + force_vent);
-            level1.rotate(angle_chute - (Math.PI / 4));
-        } else {
-            level1.rotate(Math.PI / 8); 
-        }
-        level1.drawImage(flèches[fleche.indexSprite], -25, -20, 50, 40);
-        level1.restore();
-
 
         //Animation des flèches
         fleche.compteur += ratio;
@@ -483,7 +480,7 @@ function affichage(tempsActuel) {
     pluie.forEach(goutte => {
         if(goutte.y > h || goutte.x < 0) {
             goutte.y = -20;
-            goutte.x = Math.random() * (w + 50) - 50;
+            goutte.x = calculerSpawnX();
         }
         goutte.y += (goutte.dy * ratio);
         goutte.x += (goutte.dx * ratio);
