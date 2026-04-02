@@ -69,6 +69,40 @@ screen.orientation.addEventListener("change", () => {
     }, 100);
 });
 
+//INITIALISATION DU JEU ---------------------------------------
+function initialisation_jeu() {
+    personnage.x = w - 100;
+    personnage.y = h - 160;
+    personnage.dx = 0;
+    personnage.vie = 3;
+    personnage.direction = 1;
+    personnage.vulnerabilite = true;
+    personnage.delai_invincible = 0;
+    ecrase = 0;
+
+    nbr_bois = 0;
+    pourcentage_moulin = 0;
+    index_moulin = 0;
+    bois_t = [];    
+    planche_bois();
+    boues = [];
+    pluie = [];
+    arrows = [];
+    
+    creerPluie();
+    creerFleche(); 
+
+    clearInterval(intervalBoue);
+    intervalBoue = setInterval(boue, 5000);
+
+
+    musique_fond.currentTime = 0;
+    musique_fond.play();
+    dernierTemps = performance.now();
+
+    affichage();
+}
+
 //JOUEUR ------------------------------
 let personnage = {
     x: w - 100,
@@ -82,7 +116,6 @@ let personnage = {
     delai_invincible: 0, //Délai d'invincibilité
 }
 let delai_invincible;
-const friction = 0.85; // coefficient de frottement
 let ecrase = 0; //Si le joueur est touché par une flèche, on ajoute cette valeur à personnage.y et on soustrait la taille du sprite en y
 
 const animationMarche = [perso2, perso1, perso3, perso1]; //Animation du personnage
@@ -136,7 +169,7 @@ function joueur() {
 
 //BOIS ------------------------------
 
-let nbr_bois = 0;
+let nbr_bois;
 let bois_t = [];
 function planche_bois() {
     for(let i = 1; i <= 4; i++) {
@@ -146,8 +179,7 @@ function planche_bois() {
             recup: false,
         });
     }
-}
-planche_bois()
+};
 
 //MOULIN ------------------------------
 
@@ -158,8 +190,8 @@ const moulin_sprite = [
     document.querySelector("#Moulin_75complete"),
     document.querySelector("#Moulin_100complete")
 ];
-let pourcentage_moulin = 0;
-let index_moulin = 0;
+let pourcentage_moulin;
+let index_moulin;
 
 function moulin() {
     // On utilise === pour comparer !
@@ -187,6 +219,24 @@ const flèches = [
     document.querySelector("#Arrow4")
 ];
 
+
+//Ce script permet d'initialiser la position des flèches en fonction de l'orientation du téléphone
+let intervalDifficulte;
+let force_vent = 0; // Vitesse horizontale ajoutée par l'inclinaison du mobile
+window.addEventListener("deviceorientation", (e) => {
+    let inclinaison = e.gamma; //recupère l'inclinaison du téléphone
+
+    // Sécurité : e.gamma peut être null sur PC
+    if (inclinaison !== null) {
+        // On limite l'inclinaison (pour que les flèches ne partent pas à la vitesse de la lumière)
+        if (inclinaison > 45) inclinaison = 45;
+        if (inclinaison < -45) inclinaison = -45;
+
+        // On transforme l'angle en petite force (ex: 45 degrés d'inclinaison = force de 5)
+        force_vent = inclinaison / 9; 
+    }
+});
+
 let arrows = [];
 function creerFleche() {
     for(let i = 0; i < 5; i++) {
@@ -202,7 +252,6 @@ function creerFleche() {
         });
     }
 }
-creerFleche();
 
 //PLUIE ------------------------------
 let pluie = [];
@@ -219,6 +268,7 @@ function creerPluie() {
 
 //BOUE ----------------------------------
 let boues = [];
+let intervalBoue;
 function boue() {
     boues.push({
             x: Math.random() * w - 150,
@@ -270,12 +320,12 @@ function collision_fleche(fleche) {
     }
 }
 
-let dernierTemps = performance.now();
-let ratio = 1;
+let dernierTemps;
+let ratio;
 
 //Animation de la pièce du chronorouage
-let animation_rouage = 0;
-let direction_rouage = 1;
+let animation_rouage;
+let direction_rouage;
 
 //Afficher tous les éléments ---------------------------------------------------------------------------
 function affichage(tempsActuel) {
@@ -342,6 +392,11 @@ function affichage(tempsActuel) {
             fleche.x = Math.random() * w;
         }
 
+        if (fleche.toucher_sol === false) {
+            fleche.x += (fleche.dx + force_vent) * ratio;
+            fleche.y += fleche.dy * ratio;
+        }
+
         //Si la flèche touche le sol
         if (fleche.y >= h - 60) {
             
@@ -365,6 +420,17 @@ function affichage(tempsActuel) {
             }
         }
 
+        //Rotation de la flèche en fonction du vent
+        level1.save();
+        level1.translate(fleche.x + 25, fleche.y + 20);
+        if (fleche.toucher_sol === false) {
+            let angle_chute = Math.atan2(fleche.dy, fleche.dx + force_vent);
+            level1.rotate(angle_chute - (Math.PI / 4));
+        } else {
+            level1.rotate(Math.PI / 8); 
+        }
+        level1.drawImage(flèches[fleche.indexSprite], -25, -20, 50, 40);
+        level1.restore();
         level1.drawImage(flèches[fleche.indexSprite], fleche.x, fleche.y, 50, 40);
 
 

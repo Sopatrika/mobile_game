@@ -75,26 +75,20 @@ btn_menu1.addEventListener("click", () => {
 
 btn_menu2.addEventListener("click", demarrer);
 
-btn_recommencer.addEventListener("click", () => {
-    location.reload();
-});
+btn_recommencer.addEventListener("click", demarrer);
 
 btn_fin.addEventListener("touchstart", signalVictory);
 
 
 // 5. FONCTIONS DU JEU (Lancement, Tuto, Fin)
 function demarrer() {
-    // Essaie de lancer le plein écran de façon sécurisée
     if(document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen();
     }
     menu2_level1.classList.add("invisible");
     menu_defaite.classList.add("invisible");
-    
-    creerPluie();
-    affichage();
-    setInterval(boue, 5000);
-    musique_fond.play();
+
+    initialisation_jeu()//On initalise les variables du jeu
 }
 
 function animerEtJouer(e) {
