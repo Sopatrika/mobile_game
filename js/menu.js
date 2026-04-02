@@ -11,6 +11,11 @@ const btn_menu2 = document.querySelector("#btn_menu2");
 const btn_recommencer = document.querySelector("#btn_recommencer");
 const btn_fin = document.querySelector(".btn_fin");
 
+const canvas = document.querySelector("#level1");
+const level1 = canvas.getContext("2d", {willReadFrequently: true});
+
+const dialogue_level1 = canvas.getContext("2d", {willReadFrequently: true});
+
 btn_menu1.addEventListener("click", e=> {
     menu1_level1.classList.add("invisible");
     menu2_level1.classList.remove("invisible");

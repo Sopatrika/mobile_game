@@ -1,7 +1,5 @@
 // INITIALISATION DES VARIABLES
 const body = document.querySelector("body");
-const canvas = document.querySelector("#level1");
-const level1 = canvas.getContext("2d", {willReadFrequently: true});
 
 const fond = document.querySelector("#fond");
 const vie = document.querySelector("#vie");
@@ -44,8 +42,7 @@ function taille() {
 
 taille();
 window.addEventListener("resize", () => {
-    taille(); // 1. On recalcule 'h'
-    
+    taille();
     // On actualise la position du personnage, du bois et de la boue
     personnage.y = h - 160;
     bois_t.forEach(planche => {
@@ -61,14 +58,11 @@ screen.orientation.addEventListener("change", () => {
     console.log("rotation !!");
     setTimeout(() => {
         taille();
-        
         // On actualise la position du personnage, du bois et de la boue
         personnage.y = h - 160;
-        
         bois_t.forEach(planche => {
             planche.y = h - 45;
         });
-        
         boues.forEach(flaque => {
             flaque.y = h - 30;
         });
