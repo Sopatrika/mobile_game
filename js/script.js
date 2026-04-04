@@ -20,8 +20,12 @@ const musique_fond = new Audio("sound/Arrows_in_the_Downpour.mp3"); //Musique de
 musique_fond.loop = true; 
 musique_fond.volume = 0.5;
 
+const dialogue_son = new Audio("sound/dialogue.mp3");
+
 const damage_sound = new Audio ("sound/damage.mp3"); //Son de dommage
 const build_sound = new Audio ("sound/build.mp3");
+
+const fleche_coeur = document.querySelector("#Arrow_soin");
 
 //TAILLE DU CANVAS ------------------------------
 let w, h;
@@ -55,7 +59,6 @@ window.addEventListener("resize", () => {
 
 //Voir si l'écran a été rotate
 screen.orientation.addEventListener("change", () => {
-    console.log("rotation !!");
     setTimeout(() => {
         taille();
         // On actualise la position du personnage, du bois et de la boue
@@ -89,12 +92,25 @@ function initialisation_jeu() {
     pluie = [];
     arrows = [];
     
-    creerPluie();
-    creerFleche(); 
+    creerPluie(); //Appeler la pluie
+    
+    // SYSTÈME DE FLÈCHES ---
+    delai_spawn_fleche = 500; // délai à 0.5 secondes
+    clearTimeout(timer_spawn); // On nettoie les anciens spawn
+    creerFleche();   // On lance la première flèche
+
+    clearInterval(intervalDifficulte);
+    intervalDifficulte = setInterval(() => {
+        if (delai_spawn_fleche > 300) { // Limite max de difficulté : 1 flèche toutes les 0.4s
+            delai_spawn_fleche -= 100;  // Le délai réduit de 100ms
+        }
+    }, 5000); // La difficulté augmente toutes les 5 secondes
 
     clearInterval(intervalBoue);
     intervalBoue = setInterval(boue, 5000);
 
+    animation_rouage = 0;
+    direction_rouage = 1;
 
     musique_fond.currentTime = 0;
     musique_fond.play();
@@ -252,6 +268,9 @@ window.addEventListener("deviceorientation", (e) => {
 });
 
 // fonction pour calculer la position x de la flèche et de la pluie en fonction de l'inclinaison
+let delai_spawn_fleche = 500; // Les flèches apparaissent toutes les 2 secondes au début
+let timer_spawn; // Garde en mémoire le chronomètre d'apparition
+let intervalDifficulte; // Pour accélérer le jeu
 function calculerSpawnX() {
     let point_atterrissage = Math.random() * w;
     if (force_vent === 0) {
@@ -264,18 +283,23 @@ function calculerSpawnX() {
 
 let arrows = [];
 function creerFleche() {
-    for(let i = 0; i < 5; i++) {
-        arrows.push({
-            x: calculerSpawnX(), //fonction pour calculer la position x
-            y: Math.random() * - h, //Position sur l'axe Y
-            dx: 0, //Vitesse sur l'axe X
-            dy: 4, //Vitesse sur l'axe Y
-            indexSprite: 0, //Numéro du sprite
-            compteur: 12, //FPS de l'animation du sprite
-            toucher_sol: false, //Si la flèche touche le sol = true
-            delai: 0 //Temps durant lequel la flèche reste au sol
-        });
-    }
+    let chance = Math.floor(Math.random() * 10); 
+    let type_fleche = (chance === 7) ? "soin" : "degat";
+
+    arrows.push({
+        x: calculerSpawnX(),
+        y: -100, // Apparaît tout en haut
+        dx: 0,
+        dy: 4 + (Math.random() * 2),
+        indexSprite: 0,
+        compteur: 12,
+        toucher_sol: false,
+        delai: 0,
+        type: type_fleche // On stocke le type de la flèche !
+    });
+
+    // La boucle magique : la fonction se rappelle elle-même à la fin du délai !
+    timer_spawn = setTimeout(creerFleche, delai_spawn_fleche);
 }
 
 //PLUIE ------------------------------
@@ -305,44 +329,40 @@ function boue() {
 
 //Gérer les collisions entre le joueur et une flèche --------------
 function collision_fleche(fleche) {
-    // hitbox du joueur
-    let joueurBox = {
-        x: personnage.x + 20, 
-        y: personnage.y + 30, 
-        w: 40,                
-        h: 120                
-    };
+    let joueurBox = { x: personnage.x + 20, y: personnage.y + 30, w: 40, h: 120 };
+    let flecheBox = { x: fleche.x + 10, y: fleche.y + 10, w: 30, h: 20 };
 
-    // hitbox du la flèche
-    let flecheBox = {
-        x: fleche.x + 10,
-        y: fleche.y + 10,
-        w: 30, 
-        h: 20  
-    };
-
-    //test de collision
+    // Si ça se touche
     if (joueurBox.x < flecheBox.x + flecheBox.w &&
         joueurBox.x + joueurBox.w > flecheBox.x &&
         joueurBox.y < flecheBox.y + flecheBox.h &&
         joueurBox.h + joueurBox.y > flecheBox.y) 
     { 
-        // Si la flèche touche
-        if (fleche.toucher_sol === false && personnage.vulnerabilite === true) {
-            damage_sound.play();
-            personnage.vie--;
-            personnage.vulnerabilite = false; // Le joueur devient invincible
-            console.log("Touché ! Il reste " + personnage.vie + " vies.");
-            ecrase = 10;
-
-            // la flèche est tp tout en haut
-            fleche.x = calculerSpawnX();
-            fleche.y = (Math.random() * -200) - 50;
-            fleche.dx = 0; 
-            fleche.dy = 4; 
-            fleche.delai = 0; 
+        if (fleche.toucher_sol === false) {
+            
+            // SI C'EST UNE FLÈCHE DE CUPIDON
+            if (fleche.type === "soin") {
+                if (personnage.vie < 3) { // Je limite à 5 coeurs max pour ne pas sortir de l'écran
+                    personnage.vie++; 
+                }
+                // Optionnel : un petit son de guérison ?
+                // damage_sound.play(); 
+                
+                return true; // Demande la suppression immédiate de la flèche
+            } 
+            
+            // SI C'EST UNE FLÈCHE NORMALE ET QU'ON N'EST PAS INVINCIBLE
+            else if (personnage.vulnerabilite === true) {
+                damage_sound.play();
+                personnage.vie--;
+                personnage.vulnerabilite = false; 
+                ecrase = 10;
+                
+                return true; // Demande la suppression immédiate de la flèche
+            }
         }
     }
+    return false; // La flèche ne doit pas être supprimée
 }
 
 let dernierTemps;
@@ -408,70 +428,67 @@ function affichage(tempsActuel) {
     }
 
     // AFFICHER LES FLECHES --------------
-    arrows.forEach(fleche => {
-        fleche.x += (fleche.dx * ratio);
-        fleche.y += (fleche.dy * ratio);
+    // AFFICHER LES FLÈCHES (Boucle inversée pour pouvoir supprimer)
+    for (let i = arrows.length - 1; i >= 0; i--) {
+        let fleche = arrows[i];
 
-        if (fleche.x > w) {
-            fleche.y = (Math.random() * -200) - 50;
-            fleche.x = Math.random() * w;
-        }
-
-        if (fleche.x > w + 50 || fleche.x < -50) {
-            fleche.y = (Math.random() * -200) - 50;
-            fleche.x = calculerSpawnX(); // <--- ICI
-        }
-
+        // 1. Mouvement de vol
         if (fleche.toucher_sol === false) {
             fleche.x += (fleche.dx + force_vent) * ratio;
             fleche.y += fleche.dy * ratio;
         }
 
-        //Rotation de la flèche en fonction du vent
+        // 2. Rotation et Dessin
         level1.save();
         level1.translate(fleche.x + 25, fleche.y + 20);
+        
         if (fleche.toucher_sol === false) {
             fleche.angle_memoire = Math.atan2(fleche.dy, fleche.dx + force_vent);
         }
         level1.rotate((fleche.angle_memoire || 0) - (Math.PI / 4));
-        level1.drawImage(flèches[fleche.indexSprite], -25, -20, 50, 40);
+        
+        // Choix de l'image (Cupidon ou Normale)
+        if (fleche.type === "soin") {
+            level1.drawImage(fleche_coeur, -25, -20, 50, 40);
+        } else {
+            level1.drawImage(flèches[fleche.indexSprite], -25, -20, 50, 40);
+        }
         level1.restore();
 
-        //Si la flèche touche le sol
-        if (fleche.y >= h - 60) {
-            
-            fleche.y = h - 60;
-            fleche.dy = 0;
-            fleche.dx = 0;
-
-            fleche.toucher_sol = true;
-
-            fleche.delai += ratio;
-
-            if (fleche.delai >= 120) { 
-                fleche.y = (Math.random() * -200) - 50;
-                fleche.x = calculerSpawnX();
-                
-                fleche.dy = 4; 
-                fleche.dx = 0; 
-                
-                fleche.delai = 0; 
-                fleche.toucher_sol = false;
+        // 3. Animation du feu (seulement pour les flèches normales)
+        if (fleche.type === "degat" && fleche.toucher_sol === false) {
+            fleche.compteur += ratio;
+            if (fleche.compteur >= 12) {
+                fleche.indexSprite++;
+                if (fleche.indexSprite >= flèches.length) fleche.indexSprite = 0; 
+                fleche.compteur = 0;
             }
         }
 
-        //Animation des flèches
-        fleche.compteur += ratio;
-            if (fleche.compteur >= 12) {
-                fleche.indexSprite++;
-                if (fleche.indexSprite >= flèches.length) {
-                    fleche.indexSprite = 0; 
-                }
-                fleche.compteur = 0;
-            }
+        // 4. Collision avec le sol et Suppression
+        if (fleche.y >= h - 60) {
+            fleche.y = h - 60;
+            fleche.toucher_sol = true;
+            fleche.delai += ratio;
 
-        collision_fleche(fleche); //Cette fonction gère les collisions avec le joueur.
-    });
+            // Si le délai au sol est dépassé, ON LA SUPPRIME et on passe à la suivante
+            if (fleche.delai >= 120) { 
+                arrows.splice(i, 1); 
+                continue; 
+            }
+        }
+
+        // 5. Collision avec le joueur et Suppression
+        let joueurTouche = collision_fleche(fleche);
+        if (joueurTouche === true) {
+            arrows.splice(i, 1); // La flèche disparaît sur le joueur
+        }
+        
+        // 6. Sécurité : si la flèche vole trop loin hors de l'écran par les côtés, on la supprime
+        if (fleche.x > w + 100 || fleche.x < -100) {
+            arrows.splice(i, 1);
+        }
+    }
 
     // AFFICHER LA PLUIE --------------
 
