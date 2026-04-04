@@ -281,24 +281,26 @@ function calculerSpawnX() {
     return point_atterrissage - derive_totale;
 }
 
-let arrows = [];
 function creerFleche() {
     let chance = Math.floor(Math.random() * 10); 
     let type_fleche = (chance === 7) ? "soin" : "degat";
 
     arrows.push({
-        x: calculerSpawnX(),
-        y: -100, // Apparaît tout en haut
+        // On la fait apparaître en bas de l'écran (cachée juste sous le sol)
+        x: calculerSpawnX(), 
+        y: h + 20, 
+        
         dx: 0,
-        dy: 4 + (Math.random() * 2),
+        // Propulsée très fort vers le HAUT (entre -13 et -17 de vitesse)
+        dy: -(13 + Math.random() * 4), 
+        
         indexSprite: 0,
         compteur: 12,
         toucher_sol: false,
         delai: 0,
-        type: type_fleche // On stocke le type de la flèche !
+        type: type_fleche
     });
 
-    // La boucle magique : la fonction se rappelle elle-même à la fin du délai !
     timer_spawn = setTimeout(creerFleche, delai_spawn_fleche);
 }
 
@@ -338,7 +340,7 @@ function collision_fleche(fleche) {
         joueurBox.y < flecheBox.y + flecheBox.h &&
         joueurBox.h + joueurBox.y > flecheBox.y) 
     { 
-        if (fleche.toucher_sol === false) {
+        if (fleche.toucher_sol === false && fleche.dy > 0) {
             
             // SI C'EST UNE FLÈCHE DE CUPIDON
             if (fleche.type === "soin") {
@@ -428,12 +430,13 @@ function affichage(tempsActuel) {
     }
 
     // AFFICHER LES FLECHES --------------
-    // AFFICHER LES FLÈCHES (Boucle inversée pour pouvoir supprimer)
     for (let i = arrows.length - 1; i >= 0; i--) {
         let fleche = arrows[i];
 
-        // 1. Mouvement de vol
         if (fleche.toucher_sol === false) {
+            
+            fleche.dy += 0.3 * ratio; 
+            // Application du mouvement
             fleche.x += (fleche.dx + force_vent) * ratio;
             fleche.y += fleche.dy * ratio;
         }
@@ -466,7 +469,7 @@ function affichage(tempsActuel) {
         }
 
         // 4. Collision avec le sol et Suppression
-        if (fleche.y >= h - 60) {
+        if (fleche.y >= h - 60 && fleche.dy > 0) {
             fleche.y = h - 60;
             fleche.toucher_sol = true;
             fleche.delai += ratio;
