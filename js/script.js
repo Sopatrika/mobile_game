@@ -16,16 +16,16 @@ const boue2 = document.querySelector("#boue2");
 
 const piece1 = document.querySelector("#piece1");
 
+const fleche_coeur = document.querySelector("#Arrow_soin");
+
+//SON
 const musique_fond = new Audio("sound/Arrows_in_the_Downpour.mp3"); //Musique de fond
 musique_fond.loop = true; 
 musique_fond.volume = 0.5;
-
 const dialogue_son = new Audio("sound/dialogue.mp3");
-
 const damage_sound = new Audio ("sound/damage.mp3"); //Son de dommage
 const build_sound = new Audio ("sound/build.mp3");
-
-const fleche_coeur = document.querySelector("#Arrow_soin");
+const soin_sound = new Audio("sound/soin.wav");
 
 //TAILLE DU CANVAS ------------------------------
 let w, h;
@@ -74,6 +74,7 @@ screen.orientation.addEventListener("change", () => {
 
 //INITIALISATION DU JEU ---------------------------------------
 function initialisation_jeu() {
+    ecran_allumee() //Appel de cette fonction pour que l'écran reste allumée.
     personnage.x = w - 100;
     personnage.y = h - 160;
     personnage.dx = 0;
@@ -102,7 +103,7 @@ function initialisation_jeu() {
     clearInterval(intervalDifficulte);
     intervalDifficulte = setInterval(() => {
         if (delai_spawn_fleche > 300) { // Limite max de difficulté : 1 flèche toutes les 0.4s
-            delai_spawn_fleche -= 100;  // Le délai réduit de 100ms
+            delai_spawn_fleche -= 50;  // Le délai réduit de 100ms
         }
     }, 5000); // La difficulté augmente toutes les 5 secondes
 
@@ -289,11 +290,8 @@ function creerFleche() {
         // On la fait apparaître en bas de l'écran (cachée juste sous le sol)
         x: calculerSpawnX(), 
         y: h + 20, 
-        
-        dx: 0,
-        // Propulsée très fort vers le HAUT (entre -13 et -17 de vitesse)
-        dy: -(13 + Math.random() * 4), 
-        
+        dx: (Math.random() * 4) - 2,
+        dy: -(12 + Math.random() * 4),
         indexSprite: 0,
         compteur: 12,
         toucher_sol: false,
@@ -342,18 +340,17 @@ function collision_fleche(fleche) {
     { 
         if (fleche.toucher_sol === false && fleche.dy > 0) {
             
-            // SI C'EST UNE FLÈCHE DE CUPIDON
+            // Si c'est une flèche de cupidon
             if (fleche.type === "soin") {
-                if (personnage.vie < 3) { // Je limite à 5 coeurs max pour ne pas sortir de l'écran
-                    personnage.vie++; 
+                if (personnage.vie < 3) { //On limite à 3 coeurs max
+                    personnage.vie++; //le joueur regagne une vie
                 }
-                // Optionnel : un petit son de guérison ?
-                // damage_sound.play(); 
+                soin_sound.play(); 
                 
                 return true; // Demande la suppression immédiate de la flèche
             } 
             
-            // SI C'EST UNE FLÈCHE NORMALE ET QU'ON N'EST PAS INVINCIBLE
+            // Si c'est une flèche normal et qu'on est pas invinsible
             else if (personnage.vulnerabilite === true) {
                 damage_sound.play();
                 personnage.vie--;
@@ -434,9 +431,8 @@ function affichage(tempsActuel) {
         let fleche = arrows[i];
 
         if (fleche.toucher_sol === false) {
+            fleche.dy += 0.2 * ratio; 
             
-            fleche.dy += 0.3 * ratio; 
-            // Application du mouvement
             fleche.x += (fleche.dx + force_vent) * ratio;
             fleche.y += fleche.dy * ratio;
         }
@@ -449,6 +445,12 @@ function affichage(tempsActuel) {
             fleche.angle_memoire = Math.atan2(fleche.dy, fleche.dx + force_vent);
         }
         level1.rotate((fleche.angle_memoire || 0) - (Math.PI / 4));
+
+        //Lorsque la flèche est tirée de loin (monte), elle parait plus petit et plus transparente
+        if (fleche.dy < 0) { 
+            level1.scale(0.8, 0.8); 
+            level1.globalAlpha = 0.2; 
+        }
         
         // Choix de l'image (Cupidon ou Normale)
         if (fleche.type === "soin") {

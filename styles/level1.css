@@ -145,19 +145,22 @@ canvas {
     top: 0;
     left: 0;
     right: 0;
+    bottom: 0; /* S'assure que ça prend bien tout l'écran vers le bas */
     width: 100%;
     height: 100%;
-    z-index: 3;
+    z-index: 5; /* On le met à 5 pour qu'il soit au-dessus du fond... */
 }
 
 .touche_gauche, .touche_droite {
     width: 50%;
     height: 100%;
+    cursor: pointer;
+    background-color: transparent; 
 }
 
-/* Animation */
+/* L'animation */
 @keyframes toucher {
-    0% { background-color: rgba(255, 255, 255, 0.4); }
+    0% { background-color: #e2e2e266; }
     100% { background-color: transparent; }
 }
 
@@ -168,6 +171,7 @@ canvas {
 /* Quand les menus ne sont pas affichés */
 .invisible {
     display: none !important;
+    pointer-events: none;
 }
 
 #tourner-ecran {
