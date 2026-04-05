@@ -497,18 +497,25 @@ function affichage(tempsActuel) {
 
     // AFFICHER LA PLUIE --------------
 
-    level1.fillStyle = "#100F3D";
+    // On utilise stroke (ligne) au lieu de fill (rectangle) pour pouvoir incliner la goutte
+    level1.strokeStyle = "#100F3D"; 
+    level1.lineWidth = 2;
     level1.beginPath();
+    
     pluie.forEach(goutte => {
-        if(goutte.y > h || goutte.x < 0) {
-            goutte.y = -20;
+        if (goutte.y > h || goutte.x < -50 || goutte.x > w + 50) {
+            goutte.y = -20 - (Math.random() * 100);
             goutte.x = calculerSpawnX();
         }
-        goutte.y += (goutte.dy * ratio);
-        goutte.x += (goutte.dx * ratio);
-        level1.rect(goutte.x, goutte.y, 2, 15); 
+        
+        goutte.y += goutte.dy * ratio;
+        goutte.x += (goutte.dx + force_vent) * ratio;
+        
+        level1.moveTo(goutte.x, goutte.y);
+        level1.lineTo(goutte.x - (force_vent * 3), goutte.y - 15); 
     });
-    level1.fill();
+    
+    level1.stroke();
 
     // --- GESTION DU BOIS ---
 
