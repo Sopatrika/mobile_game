@@ -21,7 +21,6 @@ const imgFille = document.querySelector("#fille1");
 
 let etapeDialogue = 1;
 let alphaFille = 0;
-let wakeLock = null;
 
 
 // Initialisation
@@ -33,14 +32,31 @@ window.addEventListener("load", () => {
     dessin_menu();
 });
 
-//Fonction pour garder l'écran allumée
+//Fonction pour empeche la mise en veille de l'écran
+let wakeLock = null;
 async function ecran_allumee() {
-    try {
-        if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
-    } catch (err) {
-        console.log("Le Wake Lock n'a pas pu être activé.");
+    // On vérifie d'abord si le navigateur supporte l'API wakeLock (qui empeche la mise en veille)
+    if ('wakeLock' in navigator) {
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            // Si le téléphone annule le lock, on le note dans la console
+            wakeLock.addEventListener('release', () => {
+                console.log("Wake Lock desactivé");
+            });
+        } catch (err) {
+            console.error("Erreur :", err.name, err.message); // Affiche pourquoi ça bloque
+        }
+    } else {
+        console.log("Ce navigateur ne supporte pas l'API Wake Lock.");
     }
 }
+
+// On relance le Wake Lock si le joueur quitte le jeu et revient
+document.addEventListener('visibilitychange', async () => {
+    if (wakeLock !== null && document.visibilityState === 'visible') {
+        await ecran_allumee();
+    }
+});
 
 
 // dessiner le fond des menus (et les adapter en fonction du responsiv)
@@ -134,7 +150,7 @@ function demarrer() {
     }
     menu2_level1.classList.add("invisible");
     menu_defaite.classList.add("invisible");
-    ecran_allumee(); // On s'assure d'activer le WakeLock au démarrage !
+    ecran_allumee();
     initialisation_jeu();
 }
 

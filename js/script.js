@@ -290,7 +290,7 @@ function creerFleche() {
         x: calculerSpawnX(), //Position x calculé à partir de calculerSpawnX()
         y: h + 20, //Position Y
         dx: (Math.random() * 4) - 2, //Vitesse sur x
-        dy: -(12 + Math.random() * 4), //Vitesse sur y
+        dy: -(8 + Math.random() * 3), //Vitesse sur y
         indexSprite: 0, //valeur pour voir à quel sprite la flèche est
         compteur: 12,
         toucher_sol: false, //Si la flèche est au sol
@@ -430,7 +430,7 @@ function affichage(tempsActuel) {
         let fleche = arrows[i];
 
         if (fleche.toucher_sol === false) {
-            fleche.dy += 0.2 * ratio; 
+            fleche.dy += 0.1 * ratio; 
             
             fleche.x += (fleche.dx + force_vent) * ratio;
             fleche.y += fleche.dy * ratio;
