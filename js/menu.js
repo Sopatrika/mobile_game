@@ -161,6 +161,7 @@ touche_gauche.addEventListener("pointerdown", animerEtJouer);
 function fin_du_jeu() {
     musique_fond.pause(); 
     musique_fond.currentTime = 0;
+    win_son.play();
     menu_fin.classList.remove("invisible");
 }
 
