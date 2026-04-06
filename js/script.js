@@ -306,7 +306,7 @@ let pluie = [];
 function creerPluie() {
     for(let i = 0; i < 200; i++) {
         pluie.push({
-            x: calculerSpawnX(), //Position x calculé à partir de calculerSpawnX()
+            x: (Math.random() * (w + 400)) - 200, //Position X
             y: Math.random() * h, //Position Y
             dx: 0, //Vitesse sur x
             dy: 5, //Vitesse sur y
@@ -501,9 +501,20 @@ function affichage(tempsActuel) {
     level1.beginPath();
     
     pluie.forEach(goutte => {
-        if (goutte.y > h || goutte.x < -50 || goutte.x > w + 50) {
+        if (goutte.y > h) {
             goutte.y = -20 - (Math.random() * 100);
             goutte.x = calculerSpawnX();
+        }
+
+        // Si la pluie part trop à gauche elle réapparaît à droite
+        if (goutte.x < -150) {
+            goutte.x = w + 150;
+            goutte.y = Math.random() * h;
+        }
+        // Pareil mais vers la droite
+        else if (goutte.x > w + 150) {
+            goutte.x = -150;
+            goutte.y = Math.random() * h;
         }
         
         goutte.y += goutte.dy * ratio;
