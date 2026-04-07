@@ -105,7 +105,7 @@ function initialisation_jeu() {
     }, 5000); // La difficulté augmente toutes les 5 secondes
 
     clearInterval(intervalBoue);
-    intervalBoue = setInterval(boue, 5000);
+    intervalBoue = setInterval(boue, 3500);
 
     animation_rouage = 0;
     direction_rouage = 1;
