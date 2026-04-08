@@ -1,4 +1,5 @@
 // Variables
+const map_leaflet = document.querySelector("#map");
 const menuDialogue = document.querySelector(".menu_dialogue");
 const menu1_level1 = document.querySelector(".menu1_level1");
 const menu2_level1 = document.querySelector(".menu2_level1");

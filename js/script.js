@@ -36,7 +36,9 @@ function taille() {
     }
 
     body.width = w;
-    body.height = w;
+    body.height = h;
+    map_leaflet.width = w;
+    map_leaflet.width = h;
     canvas.width = w;
     canvas.height = h;
 }
