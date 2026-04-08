@@ -92,11 +92,28 @@ function initGPS() {
         }
     }, (error) => {
         console.warn('Erreur GPS:', error);
-        gpsStatusElement.textContent = "Veuillez autoriser l'accès au GPS pour jouer.";
+        
+        let messageErreur = "Erreur GPS inconnue.";
+        
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                messageErreur = "Accès refusé. Cliquez sur le cadenas en haut à gauche (barre d'adresse) pour autoriser le site.";
+                break;
+            case error.POSITION_UNAVAILABLE:
+                messageErreur = "Position introuvable. Essayez d'activer le Wi-Fi ou de sortir dehors.";
+                break;
+            case error.TIMEOUT:
+                messageErreur = "Le GPS met trop de temps à répondre (Timeout).";
+                break;
+        }
+
+        gpsStatusElement.textContent = messageErreur;
         gpsStatusElement.style.color = "red";
+        
     }, {
-        enableHighAccuracy: true, // Force la puce GPS du tel
-        maximumAge: 3000
+        enableHighAccuracy: true, // Demande la précision maximale
+        timeout: 10000,           // Laisse 10 secondes au tel pour trouver la position
+        maximumAge: 0             // Refuse les anciennes positions en cache
     });
 }
 
