@@ -1,6 +1,4 @@
-// ==========================================
-// 1. VARIABLES GLOBALES
-// ==========================================
+// VARIABLES GLOBALES ---------------------------------------------------------------------------
 const map_leaflet = document.querySelector("#map");
 const menuDialogue = document.querySelector(".menu_dialogue");
 const menu1_level1 = document.querySelector(".menu1_level1");
@@ -26,17 +24,14 @@ let etapeDialogue = 1;
 let alphaFille = 0;
 
 // Variables pour le GPS
-const targetLat = 47.729944546900256; 
-const targetLng = 7.301750131528961;
-const rayonValidation = 10; // Distance en mètres
+const targetLat = 47.74504815670808; 
+const targetLng = 7.338904215467176;
+const rayonValidation = 30000; // Distance en mètres
 let map = null;
 let userMarker = null;
 let watchId = null;
 
-
-// ==========================================
-// 2. INITIALISATION AU CHARGEMENT
-// ==========================================
+// INITIALISATION AU CHARGEMENT ---------------------------------------------------------------------------
 window.addEventListener("load", () => {
     // 1. On cache les menus de votre jeu
     menuDialogue.classList.add("invisible");
@@ -68,9 +63,7 @@ window.addEventListener("load", () => {
 });
 
 
-// ==========================================
-// 3. GESTION DU GPS
-// ==========================================
+// 3. GESTION DU GPS ---------------------------------------------------------------------------
 function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371e3; 
     const p1 = lat1 * Math.PI/180;
@@ -133,9 +126,7 @@ function demarrerGPS() {
 }
 
 
-// ==========================================
-// 4. GESTION DE L'ÉCRAN (Mise en veille)
-// ==========================================
+// 4. GESTION DE L'ÉCRAN (éviter la mise en veille) ---------------------------------------------------------------------------
 let wakeLock = null;
 async function ecran_allumee() {
     if ('wakeLock' in navigator) {
@@ -152,16 +143,14 @@ async function ecran_allumee() {
     }
 }
 
-document.addEventListener('visibilitychange', async () => {
+document.addEventListener('visibilitychange', async () => { //Si l'écran commence a s'assombrir
     if (wakeLock !== null && document.visibilityState === 'visible') {
         await ecran_allumee();
     }
 });
 
 
-// ==========================================
-// 5. GESTION DES MENUS & DIALOGUES
-// ==========================================
+// GESTION DES MENUS & DIALOGUES ---------------------------------------------------------------------------
 function dessin_menu() {
     // Si w et h ne sont pas encore définis, on ne dessine rien
     if (typeof w === 'undefined' || typeof h === 'undefined') return;
@@ -239,9 +228,7 @@ btn_suite_dialogue.addEventListener("click", () => {
 });
 
 
-// ==========================================
-// 6. FONCTIONS GLOBALES DU JEU
-// ==========================================
+// FONCTIONS GLOBALES DU JEU ---------------------------------------------------------------------------
 btn_menu2.addEventListener("click", demarrer);
 btn_recommencer.addEventListener("click", demarrer);
 btn_fin.addEventListener("touchstart", signalVictory);

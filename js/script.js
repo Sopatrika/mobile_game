@@ -1,4 +1,4 @@
-// INITIALISATION DES VARIABLES
+// INITIALISATION DES VARIABLES ---------------------------------------------------------------------------
 const body = document.querySelector("body");
 
 //Images
@@ -24,7 +24,7 @@ const build_sound = new Audio ("sound/build.mp3");
 const soin_sound = new Audio("sound/soin.wav");
 const win_son = new Audio("sound/win.wav")
 
-//TAILLE DU CANVAS ------------------------------
+//TAILLE ---------------------------------------------------------------------------
 let w, h;
 function taille() {
     w = window.innerWidth;
@@ -71,7 +71,7 @@ screen.orientation.addEventListener("change", () => {
     }, 100);
 });
 
-//INITIALISATION DU JEU ---------------------------------------
+//INITIALISATION DU JEU ---------------------------------------------------------------------------
 function initialisation_jeu() {
     ecran_allumee() //Appel de cette fonction pour que l'écran reste allumée.
     personnage.x = w - 100;
@@ -94,7 +94,7 @@ function initialisation_jeu() {
     
     creerPluie(); //Appeler la pluie
     
-    // SYSTÈME DE FLÈCHES ---
+    // SYSTÈME DE FLÈCHES
     delai_spawn_fleche = 500; // délai à 0.5 secondes
     clearTimeout(timer_spawn); // On nettoie les anciens spawn
     creerFleche();   // On lance la première flèche
@@ -119,7 +119,7 @@ function initialisation_jeu() {
     affichage();
 }
 
-//JOUEUR ------------------------------
+//JOUEUR ---------------------------------------------------------------------------
 let personnage = {
     x: w - 100, //Position x du joueur
     y: h - 160, //Position y du joueur
@@ -183,7 +183,7 @@ function joueur() {
     personnage.x += (vitesse_finale * ratio);
 }
 
-//BOIS ------------------------------
+//BOIS ---------------------------------------------------------------------------
 
 let nbr_bois;
 let bois_t = [];
@@ -197,7 +197,7 @@ function planche_bois() {
     }
 };
 
-//MOULIN ----------------------------------
+//MOULIN ---------------------------------------------------------------------------
 
 //Images du moulin qui se complètent
 const moulin_sprite = [
@@ -225,7 +225,7 @@ function moulin() {
     }
 }
 
-//FLECHES -------------------------------------
+//FLECHES ---------------------------------------------------------------------------
 let index = 0;
 
 //les 4 sprite d'une flèche.
@@ -303,7 +303,7 @@ function creerFleche() {
     timer_spawn = setTimeout(creerFleche, delai_spawn_fleche);
 }
 
-//PLUIE ------------------------------
+//PLUIE ---------------------------------------------------------------------------
 let pluie = [];
 function creerPluie() {
     for(let i = 0; i < 200; i++) {
@@ -316,7 +316,7 @@ function creerPluie() {
     }
 }
 
-//BOUE ----------------------------------
+//BOUE ---------------------------------------------------------------------------
 let boues = [];
 let intervalBoue;
 function boue() {
@@ -328,7 +328,7 @@ function boue() {
         });
 }
 
-//Gérer les collisions entre le joueur et une flèche --------------
+//Gérer les collisions entre le joueur et une flèche ---------------------------------------------------------------------------
 function collision_fleche(fleche) {
     let joueurBox = { x: personnage.x + 20, y: personnage.y + 30, w: 40, h: 120 }; //Hitbox du joueur
     let flecheBox = { x: fleche.x + 10, y: fleche.y + 10, w: 30, h: 20 }; //Hitbox de la flèche
@@ -372,7 +372,7 @@ let ratio;
 let animation_rouage;
 let direction_rouage;
 
-//Afficher tous les éléments ---------------------------------------------------------------------------
+//AFFICHAGE DES ELEMENTS ---------------------------------------------------------------------------
 function affichage(tempsActuel) {
     // Fonctionnement du cheat code
     if (cheat_code === true) {
