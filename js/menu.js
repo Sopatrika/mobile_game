@@ -1,4 +1,6 @@
-// Variables
+// ==========================================
+// 1. VARIABLES GLOBALES
+// ==========================================
 const map_leaflet = document.querySelector("#map");
 const menuDialogue = document.querySelector(".menu_dialogue");
 const menu1_level1 = document.querySelector(".menu1_level1");
@@ -23,17 +25,27 @@ const imgFille = document.querySelector("#fille1");
 let etapeDialogue = 1;
 let alphaFille = 0;
 
+// Variables pour le GPS
+const targetLat = 47.729944546900256; 
+const targetLng = 7.301750131528961;
+const rayonValidation = 10; // Distance en mètres
+let map = null;
+let userMarker = null;
+let watchId = null;
 
-// Initialisation
-// Initialisation
+
+// ==========================================
+// 2. INITIALISATION AU CHARGEMENT
+// ==========================================
 window.addEventListener("load", () => {
-    // On cache les menus de votre jeu
+    // 1. On cache les menus de votre jeu
     menuDialogue.classList.add("invisible");
     menu1_level1.classList.add("invisible");
     menu2_level1.classList.add("invisible");
     menu_defaite.classList.add("invisible");
     menu_fin.classList.add("invisible");
 
+    // 2. On initialise la carte UNE SEULE FOIS
     map = L.map('map').setView([targetLat, targetLng], 15);
         
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -41,44 +53,25 @@ window.addEventListener("load", () => {
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
+    // Marqueur de la destination
     L.marker([targetLat, targetLng]).addTo(map).bindPopup("Destination").openPopup();
+    
+    // Astuce pour éviter l'écran gris
     setTimeout(() => { map.invalidateSize(); }, 200);
 
-    // Lancement du GPS
+    // 3. Lancement du GPS
     demarrerGPS();
 
+    // 4. Initialisation du canvas
     alphaFille = 0;
     dessin_menu();
 });
 
-// 6. GESTION DU GPS (Localisation du joueur)
 
-//vrai locate 47.74486962610825, 7.337868659995331
-//locate de test 47.729944546900256, 7.301750131528961
-
-const targetLat = 47.729944546900256; 
-const targetLng = 7.301750131528961;
-const rayonValidation = 10; // Distance en mètres pour valider l'arrivée
-
-        // --- INITIALISATION DE LA CARTE ---
-        const map = L.map('map').setView([targetLat, targetLng], 15);
-        
-        // Ajout du fond de carte OpenStreetMap
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
-
-        // Ajout du marqueur de destination (rouge pour bien le voir)
-        const targetMarker = L.marker([targetLat, targetLng]).addTo(map)
-            .bindPopup("Destination").openPopup();
-
-        // Variables pour suivre l'utilisateur
-        let userMarker = null;
-        let watchId = null;
-
-        // Formule mathématique pour calculer la distance entre deux coordonnées GPS
-        function calculateDistance(lat1, lon1, lat2, lon2) {
+// ==========================================
+// 3. GESTION DU GPS
+// ==========================================
+function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371e3; 
     const p1 = lat1 * Math.PI/180;
     const p2 = lat2 * Math.PI/180;
@@ -104,7 +97,7 @@ function onPositionUpdate(position) {
     const userLng = position.coords.longitude;
     const accuracy = position.coords.accuracy; 
 
-    // C'EST ICI QUE VOTRE POSITION EST AJOUTÉE SUR LA CARTE
+    // Mise à jour du marqueur du joueur sur la carte
     if (!userMarker) {
         userMarker = L.marker([userLat, userLng]).addTo(map).bindPopup("Vous êtes ici");
         const bounds = L.latLngBounds([ [userLat, userLng], [targetLat, targetLng] ]);
@@ -135,30 +128,30 @@ function demarrerGPS() {
         const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
         watchId = navigator.geolocation.watchPosition(onPositionUpdate, onPositionError, options);
     } else {
-        alert("Géolocalisation non supportée.");
+        alert("Géolocalisation non supportée par votre navigateur.");
     }
 }
 
-//Fonction pour empeche la mise en veille de l'écran
+
+// ==========================================
+// 4. GESTION DE L'ÉCRAN (Mise en veille)
+// ==========================================
 let wakeLock = null;
 async function ecran_allumee() {
-    // On vérifie d'abord si le navigateur supporte l'API wakeLock (qui empeche la mise en veille)
     if ('wakeLock' in navigator) {
         try {
             wakeLock = await navigator.wakeLock.request('screen');
-            // Si le téléphone annule le lock, on le note dans la console
             wakeLock.addEventListener('release', () => {
                 console.log("Wake Lock desactivé");
             });
         } catch (err) {
-            console.error("Erreur :", err.name, err.message); // Affiche pourquoi ça bloque
+            console.error("Erreur :", err.name, err.message); 
         }
     } else {
         console.log("Ce navigateur ne supporte pas l'API Wake Lock.");
     }
 }
 
-// On relance le Wake Lock si le joueur quitte le jeu et revient
 document.addEventListener('visibilitychange', async () => {
     if (wakeLock !== null && document.visibilityState === 'visible') {
         await ecran_allumee();
@@ -166,8 +159,13 @@ document.addEventListener('visibilitychange', async () => {
 });
 
 
-// dessiner le fond des menus (et les adapter en fonction du responsiv)
+// ==========================================
+// 5. GESTION DES MENUS & DIALOGUES
+// ==========================================
 function dessin_menu() {
+    // Si w et h ne sont pas encore définis, on ne dessine rien
+    if (typeof w === 'undefined' || typeof h === 'undefined') return;
+
     level1.drawImage(fond, 0, 0, w, h);
     level1.drawImage(sol, 0, h - 50, w, 50);
     
@@ -179,7 +177,6 @@ function dessin_menu() {
     }
 }
 
-// resize
 const actualiserAffichageMenu = () => {
     setTimeout(() => {
         if (!menuDialogue.classList.contains("invisible") || !menu1_level1.classList.contains("invisible")) {
@@ -188,11 +185,8 @@ const actualiserAffichageMenu = () => {
     }, 100);
 };
 window.addEventListener("resize", actualiserAffichageMenu);
-//Si l'orientation du téléphone a changé (portrait ou paysage)
 if (screen.orientation) screen.orientation.addEventListener("change", actualiserAffichageMenu);
 
-
-// gestion des menus et des dialogues
 
 // Passage du Chapitre 1 au Dialogue (avec fondu)
 btn_menu1.addEventListener("click", () => {
@@ -244,8 +238,9 @@ btn_suite_dialogue.addEventListener("click", () => {
     }
 });
 
+
 // ==========================================
-// 5. FONCTIONS GLOBALES DU JEU
+// 6. FONCTIONS GLOBALES DU JEU
 // ==========================================
 btn_menu2.addEventListener("click", demarrer);
 btn_recommencer.addEventListener("click", demarrer);
@@ -253,31 +248,23 @@ btn_fin.addEventListener("touchstart", signalVictory);
 
 function demarrer() {
     if(document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen();
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
     }
     menu2_level1.classList.add("invisible");
     menu_defaite.classList.add("invisible");
     ecran_allumee();
-    initialisation_jeu();
+    initialisation_jeu(); // Fonction venant de script.js
 }
 
 function animerEtJouer(e) {
-    // 1. On empêche le navigateur de faire un zoom ou un scroll
     e.preventDefault(); 
-    
-    // 2. On s'assure de bien cibler la div
     const touche = e.currentTarget; 
-
-    // TEST : Ouvre la console de ton navigateur (F12) pour voir si le clic marche !
-    console.log("Touche cliquée !"); 
-
-    // 3. LA MAGIE : On force l'animation à se relancer proprement
+    
     touche.classList.remove("anime-touche");
-    void touche.offsetWidth; // Astuce vitale : force le navigateur à recalculer la div
+    void touche.offsetWidth; 
     touche.classList.add("anime-touche");
 }
 
-// On utilise "pointerdown" qui est le standard moderne et universel
 touche_droite.addEventListener("pointerdown", animerEtJouer);
 touche_gauche.addEventListener("pointerdown", animerEtJouer);
 
