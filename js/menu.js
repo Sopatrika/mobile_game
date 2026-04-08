@@ -32,6 +32,84 @@ window.addEventListener("load", () => {
     dessin_menu();
 });
 
+// 6. GESTION DU GPS (Localisation du joueur)
+
+//vrai locate 47.74486962610825, 7.337868659995331
+//locate de test 47.72994167828884, 7.301749756692951
+
+const TARGET_LAT = 47.72994167828884;
+const TARGET_LON = 7.301749756692951;
+const TARGET_RADIUS = 5;    // Rayon en mètres pour débloquer le jeu
+
+const gpsStatusElement = document.querySelector("#gps-status");
+const btnContinuer = document.querySelector("#btn_menu1");
+
+// Formule mathématique pour calculer la distance entre 2 points GPS
+function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // Rayon de la terre en mètres
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+function initGPS() {
+    // Si on veut tester sur PC sans GPS, on peut forcer le déblocage en décommentant ces lignes :
+    gpsStatusElement.textContent = "Mode Test PC activé.";
+    btnContinuer.disabled = false;
+    btnContinuer.style.opacity = 1;
+    return;
+
+    if (!navigator.geolocation) {
+        gpsStatusElement.textContent = "Le GPS n'est pas supporté par votre téléphone.";
+        return;
+    }
+
+    // Suivi de la position en temps réel
+    navigator.geolocation.watchPosition((position) => {
+        const userLat = position.coords.latitude;
+        const userLon = position.coords.longitude;
+
+        // Calcul de la distance
+        const distance = Math.round(getDistanceFromLatLonInM(userLat, userLon, TARGET_LAT, TARGET_LON));
+
+        if (distance <= TARGET_RADIUS) {
+            // Le joueur est arrivé !
+            gpsStatusElement.textContent = `Position validée ! (${distance}m)`;
+            gpsStatusElement.style.color = "#00FF00"; // Vert
+            
+            // On débloque le bouton Continuer
+            btnContinuer.disabled = false;
+            btnContinuer.style.opacity = 1;
+            
+        } else {
+            // Le joueur est trop loin
+            gpsStatusElement.textContent = `Rapprochez-vous ! Vous êtes à ${distance}m (max: ${TARGET_RADIUS}m)`;
+            gpsStatusElement.style.color = "#FF9900"; // Orange
+            
+            // On bloque le bouton
+            btnContinuer.disabled = true;
+            btnContinuer.style.opacity = 0.5;
+        }
+    }, (error) => {
+        console.warn('Erreur GPS:', error);
+        gpsStatusElement.textContent = "Veuillez autoriser l'accès au GPS pour jouer.";
+        gpsStatusElement.style.color = "red";
+    }, {
+        enableHighAccuracy: true, // Force la puce GPS du tel
+        maximumAge: 3000
+    });
+}
+
+// Lancer le GPS dès le chargement de la page
+window.addEventListener("load", () => {
+    initGPS();
+});
+
 //Fonction pour empeche la mise en veille de l'écran
 let wakeLock = null;
 async function ecran_allumee() {
