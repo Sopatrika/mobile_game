@@ -18,8 +18,8 @@ body {
 
 
         #map-container {
-            height: 100vh;
-            width: 100vw;
+            height: 100%;
+            width: 100%;
             position: fixed;
             top: 0;
             left: 0;
@@ -34,7 +34,7 @@ body {
 
         #info-distance {
             position: absolute;
-            bottom: 30px;
+            bottom: 20%;
             left: 50%;
             transform: translateX(-50%);
             z-index: 1000;
@@ -44,6 +44,7 @@ body {
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             font-weight: bold;
             text-align: center;
+            color: #141414;
         }
 
         #menu-container {

@@ -54,10 +54,10 @@ window.addEventListener("load", () => {
 // 6. GESTION DU GPS (Localisation du joueur)
 
 //vrai locate 47.74486962610825, 7.337868659995331
-//locate de test 47.729464, 7.301248
+//locate de test 47.729944546900256, 7.301750131528961
 
-const targetLat = 47.729464; 
-const targetLng = 7.301248;
+const targetLat = 47.729944546900256; 
+const targetLng = 7.301750131528961;
 const rayonValidation = 10; // Distance en mètres pour valider l'arrivée
 
         // --- INITIALISATION DE LA CARTE ---
