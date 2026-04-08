@@ -24,10 +24,28 @@ let alphaFille = 0;
 
 
 // Initialisation
+// Initialisation
 window.addEventListener("load", () => {
-    taille(); 
+    // On cache les menus de votre jeu
     menuDialogue.classList.add("invisible");
-    menu1_level1.classList.remove("invisible");
+    menu1_level1.classList.add("invisible");
+    menu2_level1.classList.add("invisible");
+    menu_defaite.classList.add("invisible");
+    menu_fin.classList.add("invisible");
+
+    map = L.map('map').setView([targetLat, targetLng], 15);
+        
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    L.marker([targetLat, targetLng]).addTo(map).bindPopup("Destination").openPopup();
+    setTimeout(() => { map.invalidateSize(); }, 200);
+
+    // Lancement du GPS
+    demarrerGPS();
+
     alphaFille = 0;
     dessin_menu();
 });
@@ -35,92 +53,90 @@ window.addEventListener("load", () => {
 // 6. GESTION DU GPS (Localisation du joueur)
 
 //vrai locate 47.74486962610825, 7.337868659995331
-//locate de test 47.72994167828884, 7.301749756692951
+//locate de test 47.729464, 7.301248
 
-const TARGET_LAT = 47.72994167828884;
-const TARGET_LON = 7.301749756692951;
-const TARGET_RADIUS = 5;    // Rayon en mètres pour débloquer le jeu
+const targetLat = 47.729464; 
+const targetLng = 7.301248;
+const rayonValidation = 10; // Distance en mètres pour valider l'arrivée
 
-const gpsStatusElement = document.querySelector("#gps-status");
-const btnContinuer = document.querySelector("#btn_menu1");
+        // --- INITIALISATION DE LA CARTE ---
+        const map = L.map('map').setView([targetLat, targetLng], 15);
+        
+        // Ajout du fond de carte OpenStreetMap
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
 
-// Formule mathématique pour calculer la distance entre 2 points GPS
-function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
-    const R = 6371e3; // Rayon de la terre en mètres
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
+        // Ajout du marqueur de destination (rouge pour bien le voir)
+        const targetMarker = L.marker([targetLat, targetLng]).addTo(map)
+            .bindPopup("Destination").openPopup();
+
+        // Variables pour suivre l'utilisateur
+        let userMarker = null;
+        let watchId = null;
+
+        // Formule mathématique pour calculer la distance entre deux coordonnées GPS
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; 
+    const p1 = lat1 * Math.PI/180;
+    const p2 = lat2 * Math.PI/180;
+    const dp = (lat2-lat1) * Math.PI/180;
+    const dl = (lon2-lon1) * Math.PI/180;
+
+    const a = Math.sin(dp/2) * Math.sin(dp/2) +
+              Math.cos(p1) * Math.cos(p2) *
+              Math.sin(dl/2) * Math.sin(dl/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c; 
 }
 
-function initGPS() {
+function declencherArrivee() {
+    navigator.geolocation.clearWatch(watchId);
+    document.getElementById('map-container').classList.add('hidden');
+    menu1_level1.classList.remove('invisible');
+    dessin_menu();
+}
 
-    if (!navigator.geolocation) {
-        gpsStatusElement.textContent = "Le GPS n'est pas supporté par votre téléphone.";
-        return;
+function onPositionUpdate(position) {
+    const userLat = position.coords.latitude;
+    const userLng = position.coords.longitude;
+    const accuracy = position.coords.accuracy; 
+
+    // C'EST ICI QUE VOTRE POSITION EST AJOUTÉE SUR LA CARTE
+    if (!userMarker) {
+        userMarker = L.marker([userLat, userLng]).addTo(map).bindPopup("Vous êtes ici");
+        const bounds = L.latLngBounds([ [userLat, userLng], [targetLat, targetLng] ]);
+        map.fitBounds(bounds, { padding: [50, 50] });
+    } else {
+        userMarker.setLatLng([userLat, userLng]);
     }
 
-    // Suivi de la position en temps réel
-    navigator.geolocation.watchPosition((position) => {
-        const userLat = position.coords.latitude;
-        const userLon = position.coords.longitude;
+    const distance = Math.round(calculateDistance(userLat, userLng, targetLat, targetLng));
+    document.getElementById('info-distance').innerText = `Distance : ${distance}m (Précision : ±${Math.round(accuracy)}m)`;
 
-        // Calcul de la distance
-        const distance = Math.round(getDistanceFromLatLonInM(userLat, userLon, TARGET_LAT, TARGET_LON));
-
-        if (distance <= TARGET_RADIUS) {
-            // Le joueur est arrivé !
-            gpsStatusElement.textContent = `Position validée ! (${distance}m)`;
-            gpsStatusElement.style.color = "#00FF00"; // Vert
-            
-            // On débloque le bouton Continuer
-            btnContinuer.disabled = false;
-            btnContinuer.style.opacity = 1;
-            
-        } else {
-            // Le joueur est trop loin
-            gpsStatusElement.textContent = `Rapprochez-vous ! Vous êtes à ${distance}m (max: ${TARGET_RADIUS}m)`;
-            gpsStatusElement.style.color = "#FF9900"; // Orange
-            
-            // On bloque le bouton
-            btnContinuer.disabled = true;
-            btnContinuer.style.opacity = 0.5;
-        }
-    }, (error) => {
-        console.warn('Erreur GPS:', error);
-        
-        let messageErreur = "Erreur GPS inconnue.";
-        
-        switch(error.code) {
-            case error.PERMISSION_DENIED:
-                messageErreur = "Accès refusé. Cliquez sur le cadenas en haut à gauche (barre d'adresse) pour autoriser le site.";
-                break;
-            case error.POSITION_UNAVAILABLE:
-                messageErreur = "Position introuvable. Essayez d'activer le Wi-Fi ou de sortir dehors.";
-                break;
-            case error.TIMEOUT:
-                messageErreur = "Le GPS met trop de temps à répondre (Timeout).";
-                break;
-        }
-
-        gpsStatusElement.textContent = messageErreur;
-        gpsStatusElement.style.color = "red";
-        
-    }, {
-        enableHighAccuracy: false, // Demande la précision maximale
-        timeout: 10000,           // Laisse 10 secondes au tel pour trouver la position
-        maximumAge: 0             // Refuse les anciennes positions en cache
-    });
+    if (distance <= rayonValidation) {
+        declencherArrivee();
+    }
 }
 
-// Lancer le GPS dès le chargement de la page
-window.addEventListener("load", () => {
-    initGPS();
-});
+function onPositionError(err) {
+    console.warn(`Erreur GPS: ${err.message}`);
+    if(err.code === 1) {
+        document.getElementById('info-distance').innerText = "Veuillez autoriser le GPS.";
+    } else {
+        document.getElementById('info-distance').innerText = "Recherche de la position (allez dehors)...";
+    }
+}
+
+function demarrerGPS() {
+    if (navigator.geolocation) {
+        const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
+        watchId = navigator.geolocation.watchPosition(onPositionUpdate, onPositionError, options);
+    } else {
+        alert("Géolocalisation non supportée.");
+    }
+}
 
 //Fonction pour empeche la mise en veille de l'écran
 let wakeLock = null;

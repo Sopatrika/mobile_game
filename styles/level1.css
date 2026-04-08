@@ -5,14 +5,6 @@
     font-style: normal;
 }
 
-.lettre {
-    opacity: 0;
-}
-.lettre.visible {
-    opacity: 1;
-}
-
-
 :root{
     --font: "Retro";
 }
@@ -23,6 +15,48 @@ body {
     font-family: "Retro", sans-serif;
     color: white;
 }
+
+
+        #map-container {
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 50;
+            background-color: #3f3f3f;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        #info-distance {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #menu-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .hidden { display: none !important; }
 
 canvas {
     display: flex;
@@ -75,6 +109,13 @@ canvas {
 .boite_dialogue p {
     font-size: 1.2rem;
     margin: 0;
+}
+
+.lettre {
+    opacity: 0;
+}
+.lettre.visible {
+    opacity: 1;
 }
 
 .dialogue_button {
