@@ -59,10 +59,10 @@ function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
 
 function initGPS() {
     // Si on veut tester sur PC sans GPS, on peut forcer le déblocage en décommentant ces lignes :
-    gpsStatusElement.textContent = "Mode Test PC activé.";
-    btnContinuer.disabled = false;
-    btnContinuer.style.opacity = 1;
-    return;
+    // gpsStatusElement.textContent = "Mode Test PC activé.";
+    // btnContinuer.disabled = false;
+    // btnContinuer.style.opacity = 1;
+    // return;
 
     if (!navigator.geolocation) {
         gpsStatusElement.textContent = "Le GPS n'est pas supporté par votre téléphone.";
