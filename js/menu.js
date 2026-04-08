@@ -26,7 +26,7 @@ let alphaFille = 0;
 // Variables pour le GPS
 const targetLat = 47.74504815670808; 
 const targetLng = 7.338904215467176;
-const rayonValidation = 30000; // Distance en mètres
+const rayonValidation = 30000; // rayon en mètres
 let map = null;
 let userMarker = null;
 let watchId = null;
@@ -177,7 +177,7 @@ window.addEventListener("resize", actualiserAffichageMenu);
 if (screen.orientation) screen.orientation.addEventListener("change", actualiserAffichageMenu);
 
 
-// Passage du Chapitre 1 au Dialogue (avec fondu)
+// Passage du Chapitre 1 au Dialogue (avec fondu) 
 btn_menu1.addEventListener("click", () => {
     menu1_level1.classList.add("invisible");
     menuDialogue.classList.remove("invisible");
@@ -209,7 +209,7 @@ btn_menu1.addEventListener("click", () => {
     requestAnimationFrame(fonduApparition);
 });
 
-// Suite et Fin du Dialogue
+// Suite et Fin du Dialogue ------------------------------------
 btn_suite_dialogue.addEventListener("click", () => {
     if (etapeDialogue === 1) {
         btn_suite_dialogue.style.opacity = 0; 
@@ -255,7 +255,9 @@ function animerEtJouer(e) {
 touche_droite.addEventListener("pointerdown", animerEtJouer);
 touche_gauche.addEventListener("pointerdown", animerEtJouer);
 
+//Fonction pour la fin du jeu ------------------------------------
 function fin_du_jeu() {
+    dessin_menu();
     musique_fond.pause(); 
     musique_fond.currentTime = 0;
     win_son.play();

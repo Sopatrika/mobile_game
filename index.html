@@ -9,12 +9,12 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
-    <!-- MAP -->
+    <!-------------------------------------- MAP -------------------------------------->
     <div id="map-container">
         <div id="map"></div>
         <div id="info-distance">Recherche du signal GPS...</div>
     </div>
-    <!-- Ecran tourner le téléphone (quand le téléphone est en portrait) -->
+    <!-------------------- Ecran tourner le téléphone (quand le téléphone est en portrait) -------------------->
     <div id="tourner-ecran">
         <svg width="212" height="289" viewBox="0 0 212 289" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M178.5 43.1122L180.301 41.378V41.378L178.5 43.1122ZM129.169 27.41C128.229 28.4213 128.287 30.0031 129.298 30.9432L145.777 46.2624C146.789 47.2025 148.37 47.1448 149.31 46.1335C150.251 45.1222 150.193 43.5404 149.182 42.6003L134.533 28.9832L148.15 14.3349C149.09 13.3236 149.033 11.7417 148.021 10.8017C147.01 9.86161 145.428 9.91933 144.488 10.9306L129.169 27.41ZM193 86.1122C195.5 86.1584 195.5 86.1576 195.5 86.1567C195.5 86.1563 195.5 86.1553 195.5 86.1544C195.5 86.1526 195.5 86.1505 195.5 86.1479C195.5 86.1427 195.5 86.1359 195.5 86.1274C195.5 86.1105 195.501 86.0869 195.501 86.057C195.502 85.997 195.502 85.9113 195.502 85.801C195.502 85.5805 195.5 85.2617 195.492 84.8542C195.476 84.0393 195.436 82.8685 195.339 81.4191C195.147 78.5233 194.73 74.4987 193.83 69.9686C192.042 60.9747 188.289 49.6733 180.301 41.378L178.5 43.1122L176.699 44.8463C183.718 52.1343 187.215 62.3329 188.926 70.9432C189.775 75.2152 190.169 79.0187 190.35 81.7506C190.441 83.115 190.478 84.2078 190.493 84.9532C190.5 85.3258 190.502 85.6112 190.502 85.7999C190.502 85.8942 190.502 85.9644 190.501 86.0091C190.501 86.0315 190.501 86.0475 190.501 86.0571C190.501 86.0618 190.501 86.065 190.501 86.0665C190.501 86.0672 190.501 86.0675 190.501 86.0675C190.501 86.0674 190.501 86.067 190.501 86.067C190.501 86.0666 190.501 86.066 193 86.1122ZM178.5 43.1122L180.301 41.378C172.389 33.1621 159.812 29.5616 149.655 27.9436C144.509 27.1239 139.84 26.7919 136.458 26.6641C134.765 26.6001 133.39 26.5871 132.432 26.5903C131.953 26.5919 131.579 26.5976 131.321 26.6029C131.192 26.6056 131.092 26.6082 131.023 26.6102C130.988 26.6112 130.961 26.6121 130.942 26.6127C130.933 26.613 130.925 26.6132 130.92 26.6134C130.917 26.6135 130.914 26.6136 130.913 26.6137C130.912 26.6137 130.911 26.6137 130.91 26.6138C130.91 26.6138 130.909 26.6138 131 29.1121C131.091 31.6105 131.091 31.6105 131.09 31.6105C131.09 31.6105 131.09 31.6105 131.09 31.6105C131.091 31.6105 131.091 31.6105 131.092 31.6104C131.095 31.6104 131.099 31.6102 131.106 31.61C131.118 31.6096 131.139 31.6089 131.167 31.6081C131.223 31.6065 131.309 31.6042 131.425 31.6019C131.655 31.5971 132.001 31.5918 132.449 31.5903C133.346 31.5873 134.652 31.5994 136.269 31.6605C139.507 31.7829 143.969 32.101 148.868 32.8814C158.801 34.4636 169.975 37.8632 176.699 44.8463L178.5 43.1122Z" fill="white"/>
@@ -28,7 +28,7 @@
         <div class="menu_button" id="btn_menu1">Continuer</div>
     </div>
 
-    <!-- Menu dialogue -->
+    <!------------ Menu dialogue ------------>
     <div class="menu_dialogue invisible"> 
         <div class="dialogue_conteneur">
             <div class="boite_dialogue">
@@ -39,13 +39,14 @@
         </div>
     </div>
 
+    
+    <!------------- menu tuto ------------>
     <div class="menu2_level1 invisible">
-        
+        <!-- div pour montrer au joueur qu'on peut appuyer sur la droite et la gauche -->
         <div class="touches">
             <div class="touche_gauche"></div>
             <div class="touche_droite"></div>
         </div>
-
         <div class="tuto_texte">
             <h2>Comment jouer ?</h2>
             <p>👉 touchez la <strong>gauche</strong> ou la <strong>droite</strong> de l'écran pour faire avancer le personnage.</p>
@@ -57,10 +58,12 @@
         <div class="menu_button" id="btn_menu2">Jouer</div>
     </div>
 
+    <!------------ menu défaite ------------>
     <div class="menu_défaite_level1 invisible">
         <h2>Perdu !</h2>
         <div class="menu_button" id="btn_recommencer">Recommencer</div>
     </div>
+    <!------------ menu victoire ------------>
     <div class="menu_fin_level1 invisible">
         <h1>Victoire !</h1>
         <p>Vous avez recupérer le premier chronorouage !</p>
@@ -102,6 +105,7 @@
 
     <img id="piece1" src="img/Sprites/piece1.png" alt="" class="invisible">
     
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="js/animation_texte.js"></script>
     <script src="js/menu.js"></script>

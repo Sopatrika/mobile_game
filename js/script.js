@@ -1,7 +1,7 @@
 // INITIALISATION DES VARIABLES ---------------------------------------------------------------------------
 const body = document.querySelector("body");
 
-//Images
+// IMAGES
 const fond = document.querySelector("#fond");
 const vie = document.querySelector("#vie");
 const sol = document.querySelector("#sol");
@@ -14,7 +14,7 @@ const boue2 = document.querySelector("#boue2");
 const piece1 = document.querySelector("#piece1");
 const fleche_coeur = document.querySelector("#Arrow_soin");
 
-//SON
+// SON
 const musique_fond = new Audio("sound/musique_fond.mp3"); //Musique de fond
 musique_fond.loop = true; 
 musique_fond.volume = 0.5;
@@ -24,13 +24,13 @@ const build_sound = new Audio ("sound/build.mp3");
 const soin_sound = new Audio("sound/soin.wav");
 const win_son = new Audio("sound/win.wav")
 
-//TAILLE ---------------------------------------------------------------------------
+// TAILLE --------------------------------------------------------------------------------------------------
 let w, h;
 function taille() {
     w = window.innerWidth;
     h = window.innerHeight;
 
-    if (w > 932 || h > 430) {
+    if (w > 932 || h > 430) { //On limite à max 932px de largeur et 430px de hauteur
         w = 1100;
         h = 430;
     }
@@ -56,7 +56,7 @@ window.addEventListener("resize", () => {
     });
 });
 
-//Voir si l'écran a été rotate (paysage ou portrait)
+// Voir si l'écran a été rotate (paysage ou portrait)
 screen.orientation.addEventListener("change", () => {
     setTimeout(() => {
         taille();
@@ -71,7 +71,7 @@ screen.orientation.addEventListener("change", () => {
     }, 100);
 });
 
-//INITIALISATION DU JEU ---------------------------------------------------------------------------
+// INITIALISATION DU JEU -----------------------------------------------------------------------------------------
 function initialisation_jeu() {
     ecran_allumee() //Appel de cette fonction pour que l'écran reste allumée.
     personnage.x = w - 100;
@@ -119,7 +119,7 @@ function initialisation_jeu() {
     affichage();
 }
 
-//JOUEUR ---------------------------------------------------------------------------
+// JOUEUR -----------------------------------------------------------------------------------------
 let personnage = {
     x: w - 100, //Position x du joueur
     y: h - 160, //Position y du joueur
@@ -136,11 +136,11 @@ let ecrase = 0; //Si le joueur est touché par une flèche, on ajoute cette vale
 
 const animationMarche = [perso2, perso1, perso3, perso1]; //Animation du personnage lorsqu'il marche
 
-//initalisation du Cheat code (toucher 3 fois tout à droite en haut pour finir vite la partie)
+// initalisation du Cheat code (toucher 3 fois tout à droite en haut pour finir vite la partie)
 let cheat_code = false;
 let compteur_triche = 0; // Pour compter les 3 clics
 let delai_triche = 0;
-//Gestion des mouvements
+// Gestion des mouvements
 window.addEventListener("touchstart", (e) => {
     let touchX = e.touches[0].clientX; //longueur du toucher
     let touchY = e.touches[0].clientY; //hauteur du toucher
@@ -156,7 +156,7 @@ window.addEventListener("touchstart", (e) => {
         compteur_triche = 0; 
     }
 
-    // ----------- Les controle du joueur ---------
+    // Les controle du joueur --------------
     if (touchX < w / 2) { //Si l'utilisateur touche la gauche de l'écran
         personnage.dx = -2; //Le perso se déplace à gauche
         personnage.direction = -1; //Le perso regarde à gauche
@@ -183,7 +183,7 @@ function joueur() {
     personnage.x += (vitesse_finale * ratio);
 }
 
-//BOIS ---------------------------------------------------------------------------
+// BOIS -----------------------------------------------------------------------------------------
 
 let nbr_bois;
 let bois_t = [];
@@ -197,9 +197,9 @@ function planche_bois() {
     }
 };
 
-//MOULIN ---------------------------------------------------------------------------
+// MOULIN ---------------------------------------------------------------------------
 
-//Images du moulin qui se complètent
+// Images du moulin qui se complètent
 const moulin_sprite = [
     document.querySelector("#Moulin_0complete"),
     document.querySelector("#Moulin_25complete"),
@@ -210,7 +210,7 @@ const moulin_sprite = [
 let pourcentage_moulin;
 let index_moulin;
 
-//Fonction pour voir à combien de % le moulin est complété
+// Fonction pour voir à combien de % le moulin est complété
 function moulin() {
     if (pourcentage_moulin === 100) {
         index_moulin = 4;
@@ -225,10 +225,10 @@ function moulin() {
     }
 }
 
-//FLECHES ---------------------------------------------------------------------------
+// FLECHES ---------------------------------------------------------------------------
 let index = 0;
 
-//les 4 sprite d'une flèche.
+// les 4 sprite d'une flèche.
 const flèches = [
     document.querySelector("#Arrow1"),
     document.querySelector("#Arrow2"),
@@ -237,7 +237,7 @@ const flèches = [
 ];
 
 
-//Ce script permet d'initialiser la position des flèches en fonction de l'orientation du téléphone
+// Ce script permet d'initialiser la position des flèches en fonction de l'orientation du téléphone
 let force_vent = 0; // Vitesse horizontale des flèches
 window.addEventListener("deviceorientation", (e) => {
     let inclinaison = 0;
@@ -303,7 +303,7 @@ function creerFleche() {
     timer_spawn = setTimeout(creerFleche, delai_spawn_fleche);
 }
 
-//PLUIE ---------------------------------------------------------------------------
+// PLUIE -----------------------------------------------------------------------------------------
 let pluie = [];
 function creerPluie() {
     for(let i = 0; i < 200; i++) {
@@ -316,7 +316,7 @@ function creerPluie() {
     }
 }
 
-//BOUE ---------------------------------------------------------------------------
+// BOUE -----------------------------------------------------------------------------------------
 let boues = [];
 let intervalBoue;
 function boue() {
@@ -328,7 +328,7 @@ function boue() {
         });
 }
 
-//Gérer les collisions entre le joueur et une flèche ---------------------------------------------------------------------------
+// Gérer les collisions entre le joueur et une flèche ---------------------------------------------------------------------------
 function collision_fleche(fleche) {
     let joueurBox = { x: personnage.x + 20, y: personnage.y + 30, w: 40, h: 120 }; //Hitbox du joueur
     let flecheBox = { x: fleche.x + 10, y: fleche.y + 10, w: 30, h: 20 }; //Hitbox de la flèche
@@ -368,13 +368,13 @@ function collision_fleche(fleche) {
 let dernierTemps;
 let ratio;
 
-//Animation de la pièce du chronorouage
+// Animation de la pièce du chronorouage
 let animation_rouage;
 let direction_rouage;
 
-//AFFICHAGE DES ELEMENTS ---------------------------------------------------------------------------
+// AFFICHAGE DES ELEMENTS ---------------------------------------------------------------------------------------------------------------------
 function affichage(tempsActuel) {
-    // Fonctionnement du cheat code
+    // FONCTIONNEMENT DU CHEAT CODE ----------------------------
     if (cheat_code === true) {
         fin_du_jeu();
         return;
@@ -388,17 +388,17 @@ function affichage(tempsActuel) {
 
     level1.clearRect(0, 0, w, h);
 
-    // AFFICHER LE FOND -----------
+    // AFFICHER LE FOND -------------------------
     level1.drawImage(fond, 0, 0, w, h);
 
-    //AFFICHER LE MOULIN
+    // AFFICHER LE MOULIN ----------------------------
     moulin();
     level1.drawImage(moulin_sprite[index_moulin], w - 200, h - 230, 150, 200);
 
-    //AFFICHER LE SOL
+    // AFFICHER LE SOL
     level1.drawImage(sol, 0, h - 50, w, 50);
 
-    //AFFICHER LA BOUE ----------
+    // AFFICHER LA BOUE ------------------------
 
     let modificateur_vitesse = 1.0; 
     boues.forEach(boue => {
@@ -414,7 +414,7 @@ function affichage(tempsActuel) {
             boue.taille = 2;
         }
 
-        // Si le joueur passe au dessus d'une grosse flaque
+        // Si le joueur passe au dessus d'une grosse flaque 
         if (boue.taille === 2) {
             //Si le personnage est dans la hitbox de la flaque de boue
             if (personnage.x + 40 > boue.x && personnage.x + 40 < boue.x + 100) {
@@ -427,7 +427,7 @@ function affichage(tempsActuel) {
         personnage.x += (personnage.dx * modificateur_vitesse * ratio);
     }
 
-    // AFFICHER LES FLECHES --------------
+    // AFFICHER LES FLECHES ------------------------------------------
     for (let i = arrows.length - 1; i >= 0; i--) {
         let fleche = arrows[i];
 
@@ -438,7 +438,7 @@ function affichage(tempsActuel) {
             fleche.y += fleche.dy * ratio;
         }
 
-        // 2. Rotation et Dessin
+        // Rotation et Dessin
         level1.save();
         level1.translate(fleche.x + 25, fleche.y + 20);
         
@@ -447,7 +447,7 @@ function affichage(tempsActuel) {
         }
         level1.rotate((fleche.angle_memoire || 0) - (Math.PI / 4));
 
-        //Lorsque la flèche est tirée de loin (monte), elle parait plus petit et plus transparente
+        // Lorsque la flèche est tirée de loin (monte), elle parait plus petit et plus transparente
         if (fleche.dy < 0) { 
             level1.scale(0.8, 0.8); 
             level1.globalAlpha = 0.2; 
@@ -461,7 +461,7 @@ function affichage(tempsActuel) {
         }
         level1.restore();
 
-        // 3. Animation du feu des flèches
+        // Animation du feu des flèches
         if (fleche.type === "degat" && fleche.toucher_sol === false) {
             fleche.compteur += ratio;
             if (fleche.compteur >= 12) {
@@ -471,7 +471,7 @@ function affichage(tempsActuel) {
             }
         }
 
-        // 4. Collision avec le sol et Suppression
+        // Collision avec le sol et Suppression
         if (fleche.y >= h - 60 && fleche.dy > 0) {
             fleche.y = h - 60;
             fleche.toucher_sol = true;
@@ -484,7 +484,7 @@ function affichage(tempsActuel) {
             }
         }
 
-        // 5. Collision avec le joueur et Suppression
+        // Collision avec le joueur et Suppression
         let joueurTouche = collision_fleche(fleche); //Appel de la fonction qui vérifie si une flèche touche le joueur
         if (joueurTouche === true) {
             arrows.splice(i, 1); // La flèche disparaît sur le joueur
@@ -496,8 +496,7 @@ function affichage(tempsActuel) {
         }
     }
 
-    // AFFICHER LA PLUIE --------------
-
+    // AFFICHER LA PLUIE ------------------------------------------
     level1.strokeStyle = "#100F3D"; 
     level1.lineWidth = 2;
     level1.beginPath();
@@ -528,7 +527,7 @@ function affichage(tempsActuel) {
     
     level1.stroke();
 
-    // --- GESTION DU BOIS ---
+    // GESTION DU BOIS --------------------------------------------
 
     if (nbr_bois < bois_t.length) {
         if (bois_t[nbr_bois].recup === false) {
@@ -544,7 +543,7 @@ function affichage(tempsActuel) {
             pourcentage_moulin += 25; 
         }
     }
-    // --- AFFICHER LE JOUEUR ---------------
+    // AFFICHER LE JOUEUR ---------------------------------------------
     joueur();
     
     // ANIMATION DU JOUEUR
@@ -574,7 +573,7 @@ function affichage(tempsActuel) {
             personnage.delai_invincible = 0;
         }
     }
-    // DESSIN DU JOUEUR ET DU BOIS QU'IL PORTE
+    // DESSIN DU JOUEUR ET DU BOIS QU'IL PORTE 
     level1.save();
     //Si le joueur a été touché par une flèche, son sprite devient un peu rouge lorsqu'il est invincible
     if (personnage.vulnerabilite === false) level1.filter = "sepia(100%) saturate(1000%) hue-rotate(-50deg)";
@@ -599,7 +598,7 @@ function affichage(tempsActuel) {
     level1.restore();
     level1.filter = "none";
 
-    // AFFICHER LES COEURS ---------------
+    // AFFICHER LES COEURS -----------------------------
     let positionX_coeur = 10;
 
     for (let i = 0; i < personnage.vie; i++) {
