@@ -26,10 +26,14 @@ let alphaFille = 0;
 // Variables pour le GPS
 const targetLat = 47.74504815670808; 
 const targetLng = 7.338904215467176;
-const rayonValidation = 30000; // rayon en mètres
+const rayonValidation = 30; // rayon en mètres
 let map = null;
 let userMarker = null;
 let watchId = null;
+
+// --- MODE DÉVELOPPEUR ---
+const urlParams = new URLSearchParams(window.location.search);
+const isDev = urlParams.get('dev') === '1' || urlParams.get('debug') === '1';
 
 // INITIALISATION AU CHARGEMENT ---------------------------------------------------------------------------
 window.addEventListener("load", () => {
@@ -40,26 +44,31 @@ window.addEventListener("load", () => {
     menu_defaite.classList.add("invisible");
     menu_fin.classList.add("invisible");
 
-    // 2. On initialise la carte UNE SEULE FOIS
-    map = L.map('map').setView([targetLat, targetLng], 15);
-        
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-    // Marqueur de la destination
-    L.marker([targetLat, targetLng]).addTo(map).bindPopup("Destination").openPopup();
-    
-    // Astuce pour éviter l'écran gris
-    setTimeout(() => { map.invalidateSize(); }, 200);
-
-    // 3. Lancement du GPS
-    demarrerGPS();
-
-    // 4. Initialisation du canvas
+    // Initialisation du canvas en premier (pour le fond)
     alphaFille = 0;
     dessin_menu();
+
+    // Mode développeur : on passe le GPS
+    if (isDev) {
+        declencherArrivee();
+    } else {
+        // 2. On initialise la carte UNE SEULE FOIS
+        map = L.map('map').setView([targetLat, targetLng], 15);
+            
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Marqueur de la destination
+        L.marker([targetLat, targetLng]).addTo(map).bindPopup("Destination").openPopup();
+        
+        // Astuce pour éviter l'écran gris
+        setTimeout(() => { if (map) map.invalidateSize(); }, 200);
+
+        // 3. Lancement du GPS
+        demarrerGPS();
+    }
 });
 
 
@@ -231,6 +240,7 @@ btn_suite_dialogue.addEventListener("click", () => {
 // FONCTIONS GLOBALES DU JEU ---------------------------------------------------------------------------
 btn_menu2.addEventListener("click", demarrer);
 btn_recommencer.addEventListener("click", demarrer);
+btn_fin.addEventListener("click", signalVictory);
 btn_fin.addEventListener("touchstart", signalVictory);
 
 function demarrer() {
@@ -265,5 +275,10 @@ function fin_du_jeu() {
 }
 
 function signalVictory() {
-    window.parent.postMessage('GAME_COMPLETE', '*');
+    window.parent.postMessage({
+        type: 'GAME_CONTINUE',
+        payload: {
+            gameId: 1
+        }
+    }, '*');
 }
