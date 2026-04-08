@@ -111,7 +111,7 @@ function initGPS() {
         gpsStatusElement.style.color = "red";
         
     }, {
-        enableHighAccuracy: true, // Demande la précision maximale
+        enableHighAccuracy: false, // Demande la précision maximale
         timeout: 10000,           // Laisse 10 secondes au tel pour trouver la position
         maximumAge: 0             // Refuse les anciennes positions en cache
     });
