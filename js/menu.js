@@ -12,7 +12,7 @@ const touche_droite = document.querySelector(".touche_droite");
 const btn_menu1 = document.querySelector("#btn_menu1");
 const btn_menu2 = document.querySelector("#btn_menu2");
 const btn_recommencer = document.querySelector("#btn_recommencer");
-const btn_fin = document.querySelector(".btn_fin"); 
+const btn_fin = document.querySelector("#btn_fin"); 
 const btn_suite_dialogue = document.querySelector("#btn_suite_dialogue"); 
 
 const canvas = document.querySelector("#level1");
